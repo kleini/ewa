@@ -1,6 +1,5 @@
 import argparse
 from canopen.canopen import CANopen
-import canopen
 
 
 def main():
@@ -12,7 +11,7 @@ def main():
     print('Starting EVA')
 
     # create a raw socket and bind it to the given CAN interface
-    co = canopen.canopen.CANopen(args.dev, args.i)
+    co = CANopen(args.dev, args.i)
     co.send(0x01, b'\x01\x02\x03')
 
     while True:
