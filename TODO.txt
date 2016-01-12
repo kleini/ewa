@@ -1,0 +1,2 @@
+Read device type 1000
+Read error register 1001
