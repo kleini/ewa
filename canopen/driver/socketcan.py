@@ -1,3 +1,4 @@
+import canopen
 import socket
 import struct
 
@@ -16,7 +17,10 @@ class SocketCAN():
         return can_id, can_dlc, data[:can_dlc]
 
     def recv(self):
-        cf, addr = self.s.recvfrom(16)
+        try:
+            cf, addr = self.s.recvfrom(16)
+        except socket.error:
+            raise canopen.canopen.CANopenException('Error reading from socket.')
         return self.dissect_can_frame(cf)
 
     def build_can_frame(self, can_id, data):
@@ -29,3 +33,6 @@ class SocketCAN():
             self.s.send(self.build_can_frame(node_id, data))
         except socket.error:
             print('Error sending CAN frame')
+
+    def close(self):
+        self.s.close()
