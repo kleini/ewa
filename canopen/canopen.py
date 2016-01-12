@@ -107,7 +107,7 @@ class CANopenException(Exception):
 
 class CANopen:
 
-    def __init__(self, device, node_id):
+    def init(self, device, node_id):
         if node_id < 1 or node_id > 127:
             raise CANopenException('Node identifier needs to be in the range of 1 to 127.')
 

@@ -9,6 +9,7 @@ class SocketCAN:
     can_frame_fmt = "=IB3x8s"
 
     def __init__(self, device):
+        # create a raw socket and bind it to the given CAN interface
         self.s = socket.socket(socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
         self.s.bind((device,))
 
