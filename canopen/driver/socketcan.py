@@ -3,7 +3,7 @@ import socket
 import struct
 
 
-class SocketCAN():
+class SocketCAN:
 
     # CAN frame packing/unpacking (see `struct can_frame` in <linux/can.h>)
     can_frame_fmt = "=IB3x8s"

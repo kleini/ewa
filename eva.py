@@ -24,8 +24,8 @@ class EVA:
             except CANopenException:
                 break
             type = id & 0xFF80
-            nodeId = id - type
-            print('Received: type=%x, nodeId=%x, can_dlc=%x, data=%s' % (type, nodeId, len, data))
+            node_id = id - type
+            print('Received: type=%x, nodeId=%x, can_dlc=%x, data=%s' % (type, node_id, len, data))
 
     def delete(self):
         self.co.delete()

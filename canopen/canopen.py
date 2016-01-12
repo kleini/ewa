@@ -48,6 +48,7 @@ class Task:
     def do_next(self):
         return False
 
+
 class Heartbeat(Task):
 
     def __init__(self, canopen):
@@ -110,7 +111,7 @@ class CANopen:
         if node_id < 1 or node_id > 127:
             raise CANopenException('Node identifier needs to be in the range of 1 to 127.')
 
-        print('Starting CANopen device with Node ID %d(0x%02X)' % (node_id, node_id));
+        print('Starting CANopen device with Node ID %d(0x%02X)' % (node_id, node_id))
         self.timer = Timer()
         self.nmt = NMT(canopen=self, node_id=node_id)
         self.driver = SocketCAN(device=device)
