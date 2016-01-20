@@ -1,5 +1,6 @@
 CANopen:
 - SDO:
+  - https://github.com/rscada/libcanopen/blob/master/python/examples/canopen-node-info.py (so API)
   - Send SDO request (0x580 + NodeId).
   - Block until SDO response received.
   - Verify SDO response. (0x600 + NodeId)

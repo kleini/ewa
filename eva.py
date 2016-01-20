@@ -31,6 +31,7 @@ def main():
     co.register(handler=logger)
     # TODO non-sense send command
     co.send(0x01, b'\x01\x02\x03')
+    return 0
 
 
 if __name__ == '__main__':
