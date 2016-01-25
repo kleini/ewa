@@ -2,7 +2,7 @@ import argparse
 import signal
 import sys
 
-from canopen.canopen import CANopen, CANopenException
+from canopen.canopen import CANopen
 
 
 co = CANopen()
@@ -12,10 +12,10 @@ def handler(signum, frame):
     co.stop()
 
 
-def logger(id, len, data):
-    type = id & 0xFF80
-    node_id = id - type
-    print('Received: type=%x, nodeId=%x, can_dlc=%x, data=%s' % (type, node_id, len, data))
+def logger(message):
+    type = message.ident & 0xFF80
+    node_id = message.ident - type
+    print('Received: type=%x, nodeId=%x, dlc=%x, data=%s' % (type, node_id, message.length, message.data))
 
 
 def main():

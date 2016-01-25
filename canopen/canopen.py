@@ -103,8 +103,6 @@ class NMT:
         self.operatingState = self.BOOTUP
         self.node_id = node_id
         self.heartbeat = Heartbeat(canopen=canopen)
-
-    def start_heartbeat(self):
         self.canopen.timer.periodic(task=self.heartbeat)
 
     def delete(self):
@@ -137,31 +135,37 @@ class CANopenException(Exception):
     pass
 
 
+class ReceivedMessage:
+    def __init__(self, ident, length, data):
+        self.ident = ident
+        self.length = length
+        self.data = data
+
+
 class CANopen:
     def __init__(self):
-        self.timer = Timer()
-        self.nmt = None
         self.driver = None
         self.event = Event()
         self.receiver_alive = True
         self.receiver = Thread(target=self.run)
+        self.timer = Timer()
+        self.nmt = None
 
     def start(self, device, node_id):
         if node_id < 1 or node_id > 127:
             raise CANopenException('Node identifier needs to be in the range of 1 to 127.')
 
         print('Starting CANopen device with Node ID %d(0x%02X)' % (node_id, node_id))
+        self.driver = SocketCAN(device=device)
+        self.receiver.start()
         self.timer.start()
         self.nmt = NMT(canopen=self, node_id=node_id)
-        self.nmt.start_heartbeat()
-        self.driver = SocketCAN(device=device)
 
         # Bootup message
         data = bytearray()
         data.append(self.nmt.operatingState)
         self.send(0x700 + self.nmt.node_id, data)
 
-        self.receiver.start()
         self.nmt.operatingState = self.nmt.OPERATIONAL
 
     def send(self, node_id, data):
@@ -173,17 +177,18 @@ class CANopen:
     def run(self):
         while self.receiver_alive:
             try:
-                id, len, data = self.driver.recv()
+                # TODO do not block, then we can not terminate
+                message = self.driver.recv()
                 # TODO use new thread to emit events
-                self.event(id=id, len=len, data=data)
+                self.event(message=message)
             except CANopenException:
                 print('Problem receiving data.')
         print('Receiver ended')
 
     def stop(self):
         print('Stopping CANopen device')
+        self.nmt.delete()
+        self.timer.stop()
         self.receiver_alive = False
         self.driver.close()
         self.receiver.join()
-        self.nmt.delete()
-        self.timer.stop()

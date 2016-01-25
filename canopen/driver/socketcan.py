@@ -15,7 +15,7 @@ class SocketCAN:
 
     def dissect_can_frame(self, frame):
         can_id, can_dlc, data = struct.unpack(self.can_frame_fmt, frame)
-        return can_id, can_dlc, data[:can_dlc]
+        return canopen.canopen.ReceivedMessage(ident=can_id, length=can_dlc, data=data[:can_dlc])
 
     def recv(self):
         try:
