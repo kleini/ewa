@@ -9,7 +9,8 @@ from kivy.uix.widget import Widget
 from kivy.uix.scatter import Scatter
 
 
-class DummyClass: pass
+class DummyClass:
+    pass
 
 
 class Gauge(Widget):
@@ -20,7 +21,7 @@ class Gauge(Widget):
     file_gauge = StringProperty(mypath + os.sep + "gauge.png")
     file_needle = StringProperty(mypath + os.sep + "needle.png")
 
-    def __init__(self, size_gauge=128, **kwargs):
+    def __init__(self, **kwargs):
         super(Gauge, self).__init__(**kwargs)
 
         self.scat_gauge = Scatter(do_scale=False, do_translation=False, do_rotation=False)
@@ -40,18 +41,15 @@ class Gauge(Widget):
         self.bind(value=self._turn)
 
     def _update(self, *args):
-        print('Widget %d %d %d %d' % (self.x, self.y, self.width, self.height))
-        self.scat_gauge.pos = self.pos
-        self.scat_gauge.size = self.size
-        self.img_gauge.size = (self.scat_gauge.width, self.scat_gauge.width)
+        self.scat_gauge.size = (self.width, self.width)
+        self.scat_gauge.pos = (self.x, self.y + self.height - self.width)
+        self.img_gauge.size = self.scat_gauge.size
+        self.img_gauge.center = (self.scat_gauge.width / 2, self.scat_gauge.height / 2)
 
-        self.img_gauge.center = (self.scat_gauge.width / 2, self.scat_gauge.height - self.img_gauge.height / 2)
-
-        self.scat_needle.pos = self.pos
-        self.scat_needle.size = self.size
-        self.img_needle.size = (self.scat_needle.width, self.scat_needle.width)
-
-        self.img_needle.center = (self.scat_needle.width / 2, self.scat_needle.height - self.img_needle.height / 2)
+        self.scat_needle.size = self.scat_gauge.size
+        self.scat_needle.center = self.scat_gauge.center
+        self.img_needle.size = self.scat_needle.size
+        self.img_needle.center = (self.scat_needle.width / 2, self.scat_needle.height / 2)
 
     def _turn(self, *args):
         self.scat_needle.rotation = (50 * self.unit) - (self.value * self.unit)

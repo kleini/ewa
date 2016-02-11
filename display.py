@@ -11,10 +11,12 @@ from kivy.uix.spinner import Spinner
 
 class DisplayWidget(Widget):
     gauge = ObjectProperty(None)
+    slider = ObjectProperty(None)
 
-    def update(self, dt):
-        self.gauge.value = 0
-        pass
+
+    def __init__(self, **kwargs):
+        super(DisplayWidget, self).__init__(**kwargs)
+        self.gauge.value = self.slider.value
 
 
 class DisplayApp(App):
