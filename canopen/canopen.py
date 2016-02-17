@@ -2,12 +2,21 @@ import sched
 import time
 
 from canopen.driver.socketcan import SocketCAN
+from queue import Empty, Queue
 from threading import Thread
 
 
 class Event:
     def __init__(self):
         self.handlers = set()
+        self.queue = Queue()
+        self.alive = True
+        self.thread = Thread(target=self.dequeue)
+        self.thread.start()
+
+    def stop(self):
+        self.alive = False
+        self.thread.join()
 
     def handle(self, handler):
         self.handlers.add(handler)
@@ -20,16 +29,31 @@ class Event:
             raise ValueError("Handler is not handling this event, so cannot unhandle it.")
         return self
 
-    def fire(self, *args, **kargs):
+    def enqueue(self, message):
+        self.queue.put(message)
+
+    def dequeue(self):
+        while self.alive:
+            try:
+                message = self.queue.get(block=True, timeout=1)
+            except Empty:
+                continue
+            if message is not None:
+                for handler in self.handlers:
+                    handler(message=message)
+
+    def fire(self, *args, **kwargs):
+        print('Args %s' % args)
+        print('kwArgs %s' % kwargs)
         for handler in self.handlers:
-            handler(*args, **kargs)
+            handler(*args, **kwargs)
 
     def get_handler_count(self):
         return len(self.handlers)
 
     __iadd__ = handle
     __isub__ = unhandle
-    __call__ = fire
+    __call__ = enqueue
     __len__ = get_handler_count
 
 
@@ -60,7 +84,6 @@ class Timer:
     def run(self):
         while self.alive:
             self.scheduler.run()
-        print('Timer ended')
 
     def periodic(self, task):
         if task.do_next():
@@ -183,7 +206,6 @@ class CANopen:
                 self.event(message=message)
             except CANopenException:
                 print('Problem receiving data.')
-        print('Receiver ended')
 
     def stop(self):
         print('Stopping CANopen device')
@@ -192,3 +214,4 @@ class CANopen:
         self.receiver_alive = False
         self.driver.close()
         self.receiver.join()
+        self.event.stop()
