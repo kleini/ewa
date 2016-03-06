@@ -3,7 +3,7 @@ import time
 
 from canopen.driver.socketcan import SocketCAN
 from queue import Empty, Queue
-from threading import Thread
+from threading import Condition, Thread
 
 
 class Event:
@@ -12,6 +12,8 @@ class Event:
         self.queue = Queue()
         self.alive = True
         self.thread = Thread(target=self.dequeue)
+
+    def start(self):
         self.thread.start()
 
     def stop(self):
@@ -165,6 +167,25 @@ class ReceivedMessage:
         self.data = data
 
 
+class SDOResponse:
+    condition = Condition()
+    message = None
+
+    def receive(self, message):
+        self.condition.acquire()
+        self.message = message
+        self.condition.notify()
+        self.condition.release()
+
+    def get(self):
+        self.condition.acquire()
+        # TODO check for equal 0x580 + node_id, command byte, index, sub-index
+        while not self.message:
+            self.condition.wait()
+        self.condition.release()
+        return self.message
+
+
 class CANopen:
     def __init__(self):
         self.driver = None
@@ -179,6 +200,7 @@ class CANopen:
             raise CANopenException('Node identifier needs to be in the range of 1 to 127.')
 
         print('Starting CANopen device with Node ID %d(0x%02X)' % (node_id, node_id))
+        self.event.start()
         self.driver = SocketCAN(device=device)
         self.receiver.start()
         self.timer.start()
@@ -215,3 +237,24 @@ class CANopen:
         self.driver.close()
         self.receiver.join()
         self.event.stop()
+
+    def SDOwrite(self, node_id, index, subindex, type, value):
+        receive = SDOResponse()
+        self.event += receive.receive()
+        data = bytearray()
+        # only expedited yet
+        # byte 0 command byte:
+        # 0x40 i16, 32-bit read
+        # 0x23, 0x2b i16, 32-bit write
+        # successful read 0x4b, 0x43
+        # successful write 0x60
+        # abort 0x80
+        # data.append(0x23 | ((4-value.length)<<2) )
+        # byte 1 and 2 index LSB
+        # byte 3 sub-index
+        # byte 4-7 data LSB
+        self.send(0x580 + node_id, data)
+        return receive.get()
+
+    def SDOread(self, node_id, index, subindex, type):
+        return 0
