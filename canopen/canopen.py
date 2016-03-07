@@ -238,23 +238,29 @@ class CANopen:
         self.receiver.join()
         self.event.stop()
 
-    def SDOwrite(self, node_id, index, subindex, type, value):
+    def SDOupload(self, node_id, index, subindex, type, value):
+        # only expedited yet
+        if len(value) > 4:
+            raise CANopenException('Can not upload more than 4 bytes currently.')
+
+        data = bytearray()
+        # command byte
+        data.append(0x23 | (4 - len(data)) << 2)
+        # index LSB
+        data.append(index & 0xff)
+        data.append((index >> 8) & 0xff)
+        # sub-index
+        data.append(subindex)
+        # data TODO LSB
+        data.append(value)
+
         receive = SDOResponse()
         self.event += receive.receive()
-        data = bytearray()
-        # only expedited yet
-        # byte 0 command byte:
-        # 0x40 i16, 32-bit read
-        # 0x23, 0x2b i16, 32-bit write
-        # successful read 0x4b, 0x43
-        # successful write 0x60
-        # abort 0x80
-        # data.append(0x23 | ((4-value.length)<<2) )
-        # byte 1 and 2 index LSB
-        # byte 3 sub-index
-        # byte 4-7 data LSB
-        self.send(0x580 + node_id, data)
-        return receive.get()
+        try:
+            self.send(0x580 + node_id, data)
+            return receive.get()
+        finally:
+            self.event -= receive.receive()
 
     def SDOread(self, node_id, index, subindex, type):
         return 0
