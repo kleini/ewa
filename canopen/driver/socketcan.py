@@ -6,14 +6,14 @@ from struct import pack, unpack
 
 
 class SocketCAN:
-
     # CAN frame packing/unpacking (see `struct can_frame` in <linux/can.h>)
     can_frame_fmt = "=IB3x8s"
+    # create a raw socket
+    socket = socket(AF_CAN, SOCK_RAW, CAN_RAW)
+    closed = False
 
     def __init__(self, device):
-        # create a raw socket and bind it to the given CAN interface
-        self.socket = socket(AF_CAN, SOCK_RAW, CAN_RAW)
-        self.closed = False
+        # bind socket to the given CAN interface
         self.socket.bind((device,))
 
     def dissect_can_frame(self, frame):
