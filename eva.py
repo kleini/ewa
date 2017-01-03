@@ -22,7 +22,7 @@ def main():
     signal.signal(signal.SIGINT, handler)
     parser = argparse.ArgumentParser(description='EVA')
     parser.add_argument('dev', metavar='<CAN device name>', help='CAN device name')
-    parser.add_argument('-i', default=42, type=int, choices=range(1, 128), required=False, help='canopen Node ID')
+    parser.add_argument('-i', default=42, type=int, choices=range(1, 3), required=False, help='canopen Node ID')
     args = parser.parse_args()
 
     print('Starting EVA')
