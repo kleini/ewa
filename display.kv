@@ -1,24 +1,21 @@
 #:kivy 1.0.9
 #:import Gauge gauge
 
-<DisplayWidget>:
-    slider: slider
+<Display>:
+    spacing: 0
+    orientation: 'vertical'
     gauge: gauge
-    FloatLayout:
+    slider: slider
+    canvas.before:
+        Color:
+            rgba: 1,1,1,.5
+        Line:
+            points: 0, 0, 10, 0
+    Gauge:
+        id: gauge
         width: 800
-        height: 480
-        canvas.before:
-            Color:
-                rgba: 0,0,0,0
-            Rectangle:
-                size: self.size
-                pos: self.pos
-        Gauge:
-            id: gauge
-            pos: 0, 48
-            size_hint: 1, .9
-        Slider:
-            id: slider
-            pos: 0, 0
-            size_hint: 1, .1
-            on_value: gauge.value = self.value
+        height: 432
+    Slider:
+        id: slider
+        width: 800
+        on_value: root.set_gauge(value=self.value)

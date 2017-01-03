@@ -2,29 +2,26 @@ import sys
 
 from kivy.app import App
 from kivy.properties import ObjectProperty
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.widget import Widget
-from kivy.uix.slider import Slider
-from kivy.uix.spinner import Spinner
+from kivy.uix.floatlayout import FloatLayout
+from kivy.core.window import Window
 
 
-class DisplayWidget(Widget):
+class Display(BoxLayout):
     gauge = ObjectProperty(None)
     slider = ObjectProperty(None)
 
-
-    def __init__(self, **kwargs):
-        super(DisplayWidget, self).__init__(**kwargs)
-        self.gauge.value = self.slider.value
+    def set_gauge(self, value):
+        print(self.gauge.size)
+        self.gauge.value = value
 
 
 class DisplayApp(App):
     def build(self):
-        return DisplayWidget()
-
+        return Display()
 
 def main():
+    Window.size = (800, 480)
     DisplayApp().run()
     return 0
 
