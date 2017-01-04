@@ -12,7 +12,6 @@ class Display(BoxLayout):
     slider = ObjectProperty(None)
 
     def set_gauge(self, value):
-        print(self.gauge.size)
         self.gauge.value = value
 
 

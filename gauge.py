@@ -41,8 +41,14 @@ class Gauge(Widget):
         self.bind(value=self._turn)
 
     def _update(self, *args):
-        self.scat_gauge.size = (self.width, self.width)
-        self.scat_gauge.pos = (self.x, self.y + self.height - self.width)
+        # images are 1024 x 1024, but only top 552 pixels contain the gauge
+        height = min(self.height, self.width * 552 / 1024)
+        width = min(self.width, self.height * 1024 / 552)
+
+        # modify size first otherwise center placing is done with old size
+        self.scat_gauge.size = (width, width)
+        self.scat_gauge.center = (self.center_x, self.y + height - width / 2)
+        # image positioning relative to scat_gauge and not to window and again first size to have correct center positioning
         self.img_gauge.size = self.scat_gauge.size
         self.img_gauge.center = (self.scat_gauge.width / 2, self.scat_gauge.height / 2)
 

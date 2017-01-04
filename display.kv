@@ -6,16 +6,10 @@
     orientation: 'vertical'
     gauge: gauge
     slider: slider
-    canvas.before:
-        Color:
-            rgba: 1,1,1,.5
-        Line:
-            points: 0, 0, 10, 0
     Gauge:
         id: gauge
-        width: 800
-        height: 432
+        size_hint: 1, .9
     Slider:
         id: slider
-        width: 800
+        size_hint: 1, .1
         on_value: root.set_gauge(value=self.value)
