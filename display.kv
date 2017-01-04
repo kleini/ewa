@@ -1,15 +1,72 @@
 #:kivy 1.0.9
 #:import Gauge gauge
 
+<Widget>:
+    font_size: dp(20)
+
 <Display>:
-    spacing: 0
-    orientation: 'vertical'
-    gauge: gauge
-    slider: slider
-    Gauge:
-        id: gauge
-        size_hint: 1, .9
-    Slider:
-        id: slider
-        size_hint: 1, .1
-        on_value: root.set_gauge(value=self.value)
+    torque_gauge: torque_gauge
+    force_select_button: force_select_button
+    max_force_select: max_force_select
+    force_select_display: force_select_display
+    id: pages
+    border: 0
+    BoxLayout:
+        spacing: 0
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Gauge:
+            id: torque_gauge
+            size_hint: 1, .9
+        BoxLayout:
+            size_hint: 1, .1
+            orientation: 'horizontal'
+            Label:
+                text: 'Zugkraft'
+            Button:
+                id: force_select_button
+                text: '60 kg'
+                on_press: pages.page = 1
+            Label:
+                text: 'Aktuell'
+            Label:
+                text: '0'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: 'Zugkraft Auswahl'
+        Label:
+            id: force_select_display
+            text: '60 kg'
+        BoxLayout:
+            orientation: 'horizontal'
+            Slider:
+                id: max_force_select
+                size_hint: .8, None
+                min: 60
+                max: 100
+                step: 5
+                on_value: root.select_force(self.value)
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: .2, None
+                Label:
+                    text: 'Biplace'
+                Switch:
+                    id: biplace
+                    on_active: root.biplace(self.active)
+        Button:
+            text: 'Ok'
+            on_press: pages.page = 0
