@@ -1,9 +1,11 @@
 import sched
 import time
-
-from canopen.driver.socketcan import SocketCAN
 from queue import Empty, Queue
 from threading import Condition, Thread
+
+from canopen import CANopenException
+from canopen.interfaces.interface import Interface
+from canopen.message import ReceivedMessage
 
 
 class Event:
@@ -156,17 +158,6 @@ class Heartbeat(Task):
         return self.run
 
 
-class CANopenException(Exception):
-    pass
-
-
-class ReceivedMessage:
-    def __init__(self, ident, length, data):
-        self.ident = ident
-        self.length = length
-        self.data = data
-
-
 class SDOResponse:
     condition = Condition()
     message = None
@@ -201,7 +192,7 @@ class CANopen:
 
         print('Starting CANopen device with Node ID %d(0x%02X)' % (node_id, node_id))
         self.event.start()
-        self.driver = SocketCAN(device=device)
+        self.driver = Interface(device=device)
         self.receiver.start()
         self.timer.start()
         self.nmt = NMT(canopen=self, node_id=node_id)
@@ -213,8 +204,9 @@ class CANopen:
 
         self.nmt.operatingState = self.nmt.OPERATIONAL
 
+    # TODO do we really want this send method?
     def send(self, node_id, data):
-        self.driver.send(node_id, data)
+        self.driver.send(ReceivedMessage(ident=node_id, length=len(data), data=data))
 
     def register(self, handler):
         self.event += handler
@@ -238,7 +230,7 @@ class CANopen:
         self.receiver.join()
         self.event.stop()
 
-    def SDOupload(self, node_id, index, subindex, type, value):
+    def sdo_upload(self, node_id, index, subindex, type, value):
         # only expedited yet
         if len(value) > 4:
             raise CANopenException('Can not upload more than 4 bytes currently.')
@@ -262,5 +254,5 @@ class CANopen:
         finally:
             self.event -= receive.receive()
 
-    def SDOread(self, node_id, index, subindex, type):
+    def sdo_read(self, node_id, index, subindex, type):
         return 0
