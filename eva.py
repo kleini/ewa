@@ -2,7 +2,7 @@ import argparse
 import signal
 import sys
 
-from canopen.canopen import CANopen
+from mycanopen.canopen import CANopen
 
 
 co = CANopen()
