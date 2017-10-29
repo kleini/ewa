@@ -23,4 +23,17 @@ The runtime starter uses Python3.
 ## Display
 
 The display utilizes multiple pages using a Kivy PageLayout.
- 
+
+# CANopen
+
+## PDO
+
+### Transmission type
+
+ * 0 acyclic synchronous
+ * 1...240 cyclic synchronous
+ * 241...251 reserved
+ * 252 synchronous RTR only
+ * 253 asynchronous RTR only
+ * 254...255 asynchronous: transmit if one value of the PDO changed
+

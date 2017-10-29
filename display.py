@@ -1,5 +1,3 @@
-import sys
-
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
@@ -8,12 +6,14 @@ from kivy.uix.pagelayout import PageLayout
 
 class Display(PageLayout):
     torque_gauge = ObjectProperty(None)
+    torque_label = ObjectProperty(None)
     force_select_button = ObjectProperty(None)
     max_force_select = ObjectProperty(None)
     force_select_display = ObjectProperty(None)
 
     def set_torque(self, value):
         self.torque_gauge.value = value
+        self.torque_label.text = str(value) + " kg"
 
     def biplace(self, value):
         if value:
