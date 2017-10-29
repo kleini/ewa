@@ -11,31 +11,7 @@
     force_select_display: force_select_display
     id: pages
     border: 0
-    BoxLayout:
-        spacing: 0
-        orientation: 'vertical'
-        canvas.before:
-            Color:
-                rgba: 0,0,0,1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Gauge:
-            id: torque_gauge
-            size_hint: 1, .9
-        BoxLayout:
-            size_hint: 1, .1
-            orientation: 'horizontal'
-            Label:
-                text: 'Zugkraft'
-            Button:
-                id: force_select_button
-                text: '60 kg'
-                on_press: pages.page = 1
-            Label:
-                text: 'Aktuell'
-            Label:
-                text: '0'
+    page: 1
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
@@ -69,4 +45,32 @@
                     on_active: root.biplace(self.active)
         Button:
             text: 'Ok'
-            on_press: pages.page = 0
+            on_press: pages.page = 1
+
+    # the last page is always displayed first on top. If the default page is another one, all above pages slide to the
+    # right when the app starts.
+    BoxLayout:
+        spacing: 0
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Gauge:
+            id: torque_gauge
+            size_hint: 1, .9
+        BoxLayout:
+            size_hint: 1, .1
+            orientation: 'horizontal'
+            Label:
+                text: 'Zugkraft'
+            Button:
+                id: force_select_button
+                text: '60 kg'
+                on_press: pages.page = 0
+            Label:
+                text: 'Aktuell'
+            Label:
+                text: '0'

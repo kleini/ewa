@@ -1,36 +1,39 @@
 import argparse
 import signal
 import sys
+from display import DisplayApp
 
-from mycanopen.canopen import CANopen
+
+class Eva(object):
+    def __init__(self):
+        self.display = None
+
+    def start(self, args):
+        self.display = DisplayApp(args.d)
+        self.display.run()
+
+    def stop(self):
+        self.display.stop()
 
 
-co = CANopen()
+eva = Eva()
 
 
 def handler(signum, frame):
-    co.stop()
-
-
-def logger(message):
-    type = message.ident & 0xFF80
-    node_id = message.ident - type
-    print('Received: type=%x, nodeId=%x, dlc=%x, data=%s' % (type, node_id, message.length, message.data))
+    eva.stop()
 
 
 def main():
     signal.signal(signal.SIGINT, handler)
     parser = argparse.ArgumentParser(description='EVA')
     parser.add_argument('dev', metavar='<CAN device name>', help='CAN device name')
-    parser.add_argument('-i', default=42, type=int, choices=range(1, 3), required=False, help='canopen Node ID')
-    args = parser.parse_args()
+    parser.add_argument('-i', default=42, type=int, choices=range(1, 127), required=False, help='canopen Node ID')
+    parser.add_argument('-d', action="store_true")
+    args, left = parser.parse_known_args()
+    sys.argv = sys.argv[:1] + left
 
     print('Starting EVA')
-
-    co.start(args.dev, args.i)
-    co.register(handler=logger)
-    # TODO non-sense send command
-    co.send(0x01, b'\x01\x02\x03')
+    eva.start(args)
     return 0
 
 

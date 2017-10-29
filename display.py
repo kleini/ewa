@@ -29,14 +29,13 @@ class Display(PageLayout):
 
 
 class DisplayApp(App):
+    def __init__(self, devel):
+        self.devel = devel
+        self.display = None
+        super(DisplayApp, self).__init__()
+
     def build(self):
-        return Display()
-
-def main():
-    Window.size = (800, 480)
-    DisplayApp().run()
-    return 0
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+        if self.devel:
+            Window.size = (800, 480)
+        self.display = Display()
+        return self.display

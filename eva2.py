@@ -1,6 +1,7 @@
 import argparse
 import canopen
 import time
+import sys
 
 
 def main():
@@ -28,8 +29,8 @@ def main():
     print("Test %s" % (node.object_dictionary[0x1017]))
     print("Test2 %s" % (other.sdo[0x1017].raw))
     print("Device %s" % (other.sdo['DeviceName'].raw))
-    print("Vendor ID %s" % (other.sdo[0x1018][1].raw))
-    print("Heartbeat %d" % (other.sdo['Producer Heartbeat Time'].raw))
+    print("Vendor ID %s" % other.sdo[0x1018][1].raw)
+    print("Heartbeat %d" % other.sdo['Producer Heartbeat Time'].raw)
     other.sdo['Producer Heartbeat Time'].raw = 1000
 
     #other.pdo.read()
