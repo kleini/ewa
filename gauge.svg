@@ -14,8 +14,8 @@
    height="256"
    id="svg3014"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="gauge2.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="gauge.svg"
    inkscape:export-filename="/mnt/dev/Kivy_Projects/kivy-garden/garden.disc/cadran.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -152,15 +152,16 @@
      inkscape:showpageshadow="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1885"
-     inkscape:window-height="1064"
-     inkscape:window-x="-5"
-     inkscape:window-y="-10"
+     inkscape:window-width="3781"
+     inkscape:window-height="2098"
+     inkscape:window-x="59"
+     inkscape:window-y="34"
      inkscape:window-maximized="1">
     <sodipodi:guide
        orientation="1,0"
        position="-173.26733,275.74257"
-       id="guide3846" />
+       id="guide3846"
+       inkscape:locked="false" />
     <inkscape:grid
        type="xygrid"
        id="grid3848"
@@ -171,11 +172,13 @@
     <sodipodi:guide
        orientation="0,1"
        position="85,138"
-       id="guide3887" />
+       id="guide3887"
+       inkscape:locked="false" />
     <sodipodi:guide
        orientation="0,1"
        position="95,118"
-       id="guide3889" />
+       id="guide3889"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata3019">
@@ -185,7 +188,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -496,11 +499,10 @@
      style="display:inline">
     <text
        xml:space="preserve"
-       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        x="119.39656"
        y="42.206905"
        id="text3965"
-       sodipodi:linespacing="125%"
        inkscape:export-filename="/mnt/dev/Kivy_Projects/kivy-garden/garden.disc/cadran.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
@@ -508,29 +510,27 @@
          id="tspan3967"
          x="119.39656"
          y="42.206905"
-         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#f3dfdf;fill-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans Bold">50</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#f3dfdf;fill-opacity:1">50</tspan></text>
     <text
-       sodipodi:linespacing="125%"
        id="text3981"
        y="68.161255"
        x="60.344837"
-       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        xml:space="preserve"
        inkscape:export-filename="/mnt/dev/Kivy_Projects/kivy-garden/garden.disc/cadran.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
-         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#f3dfdf;fill-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans Bold"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#f3dfdf;fill-opacity:1"
          y="68.161255"
          x="60.344837"
          id="tspan3983"
          sodipodi:role="line">25</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        x="177.58621"
        y="68.06897"
        id="text3985"
-       sodipodi:linespacing="125%"
        inkscape:export-filename="/mnt/dev/Kivy_Projects/kivy-garden/garden.disc/cadran.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
@@ -538,29 +538,27 @@
          id="tspan3987"
          x="177.58621"
          y="68.06897"
-         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#f3dfdf;fill-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans Bold">75</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#f3dfdf;fill-opacity:1">75</tspan></text>
     <text
-       sodipodi:linespacing="125%"
        id="text3989"
        y="119.14657"
        x="203.51724"
-       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        xml:space="preserve"
        inkscape:export-filename="/mnt/dev/Kivy_Projects/kivy-garden/garden.disc/cadran.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
-         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#f3dfdf;fill-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans Bold"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#f3dfdf;fill-opacity:1"
          y="119.14657"
          x="203.51724"
          id="tspan3991"
          sodipodi:role="line">100</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:PlainGermanica;-inkscape-font-specification:PlainGermanica;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        x="24.568966"
        y="119.14657"
        id="text3993"
-       sodipodi:linespacing="125%"
        inkscape:export-filename="/mnt/dev/Kivy_Projects/kivy-garden/garden.disc/cadran.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
@@ -568,7 +566,7 @@
          id="tspan3995"
          x="24.568966"
          y="119.14657"
-         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#f3dfdf;fill-opacity:1;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans Bold">0</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14px;line-height:1.25;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#f3dfdf;fill-opacity:1">0</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -577,7 +575,7 @@
      style="display:none">
     <path
        style="fill:none;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Lend)"
-       d="m 127.73483,128 0,-61.77454 -0.32921,0.189962"
+       d="M 127.73483,128 V 66.22546 l -0.32921,0.189962"
        id="path4075"
        inkscape:path-effect="#path-effect4077-2"
        inkscape:original-d="m 127.73483,128 0,-61.77454 -0.32921,0.189962"
@@ -587,7 +585,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:#eddddd;fill-opacity:1;stroke:none;display:inline"
-       d="m 125,128 3,-112 3,112 -6,0"
+       d="m 125,128 3,-112 3,112 z"
        id="path3850"
        inkscape:path-effect="#path-effect3852-0"
        inkscape:original-d="m 125,128 3,-112 3,112 z"
