@@ -15,11 +15,11 @@ class DummyClass:
 
 class Gauge(Widget):
     dummy = DummyClass
-    unit = NumericProperty(1.8)
-    value = BoundedNumericProperty(0, min=0, max=100, errorvalue=0)
+    unit = NumericProperty(1.2)
+    value = BoundedNumericProperty(0, min=0, max=150, errorvalue=0)
     mypath = os.path.dirname(os.path.abspath(inspect.getsourcefile(dummy)))
-    file_gauge = StringProperty(mypath + os.sep + "gauge.png")
-    file_needle = StringProperty(mypath + os.sep + "needle.png")
+    file_gauge = StringProperty(mypath + os.sep + 'kilogramms.png')
+    file_needle = StringProperty(mypath + os.sep + 'needle.png')
 
     def __init__(self, **kwargs):
         super(Gauge, self).__init__(**kwargs)
@@ -48,7 +48,8 @@ class Gauge(Widget):
         # modify size first otherwise center placing is done with old size
         self.scat_gauge.size = (width, width)
         self.scat_gauge.center = (self.center_x, self.y + height - width / 2)
-        # image positioning relative to scat_gauge and not to window and again first size to have correct center positioning
+        # image positioning relative to scat_gauge and not to window and again first size to have correct center
+        # positioning
         self.img_gauge.size = self.scat_gauge.size
         self.img_gauge.center = (self.scat_gauge.width / 2, self.scat_gauge.height / 2)
 
@@ -58,5 +59,5 @@ class Gauge(Widget):
         self.img_needle.center = (self.scat_needle.width / 2, self.scat_needle.height / 2)
         self._turn()
 
-    def _turn(self, *args):
-        self.scat_needle.rotation = (50 * self.unit) - (self.value * self.unit)
+    def _turn(self):
+        self.scat_needle.rotation = 90 - (self.value * self.unit)

@@ -2,6 +2,30 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
 from kivy.uix.pagelayout import PageLayout
+from kivy.graphics import Color, Ellipse
+from kivy.uix.widget import Widget
+
+
+class Connected(Widget):
+    def __init__(self, **kwargs):
+        super(Connected, self).__init__(**kwargs)
+        with self.canvas:
+            self.color = Color(1, 0, 0)
+            self.circle = Ellipse(pos=self.pos, size=self.size)
+        self.bind(pos=self.draw, size=self.draw)
+
+    def connected(self, connected):
+        if connected:
+            self.color.r = 0
+            self.color.g = 1
+        else:
+            self.color.r = 1
+            self.color.g = 0
+        self.draw()
+
+    def draw(self, *args):
+        self.circle.pos = self.pos
+        self.circle.size = self.size
 
 
 class Display(PageLayout):
@@ -10,6 +34,7 @@ class Display(PageLayout):
     force_select_button = ObjectProperty(None)
     max_force_select = ObjectProperty(None)
     force_select_display = ObjectProperty(None)
+    connected_color = ObjectProperty(None)
 
     def set_torque(self, value):
         self.torque_gauge.value = value
@@ -26,6 +51,9 @@ class Display(PageLayout):
     def select_force(self, value):
         self.force_select_display.text = str(value) + " kg"
         self.force_select_button.text = str(value) + " kg"
+
+    def connected(self, connected):
+        self.connected_color.connected(connected)
 
 
 class DisplayApp(App):

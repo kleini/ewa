@@ -2,11 +2,11 @@ import argparse
 import canopen
 import signal
 import sys
+import time
 from canopen import nmt
 from display import DisplayApp
 from enum import Enum
 from threading import Thread
-from time import sleep
 
 
 class State(Enum):
@@ -22,7 +22,9 @@ class Eva(object):
         self.state = State.OFFLINE
         self.network = None
         self.controller = None
-        self.thread = Thread(target=self.mainloop)
+        self.mainThread = Thread(target=self.mainloop)
+        self.monitorThread = None
+        self.heartbeat = False
 
     def start(self, args):
         self.display = DisplayApp(args.d)
@@ -30,19 +32,25 @@ class Eva(object):
         self.network.connect(bustype='socketcan', channel=args.dev)
         self.controller = self.network.add_node(7, 'CANopenSocket.eds')
         # main EVA thread here
-        self.thread.start()
+        self.mainThread.start()
         # blocks until the UI ends
         self.display.run()
-        print('Value %d' % self.display.display.torque_gauge.value)
 
     def stop(self):
         self.run = False
-        self.thread.join()
-        self.controller.pdo.tx[1].stop()
-        self.controller.nmt.state = 'STOPPED'
-        # TODO shutdown PDO
-        self.network.disconnect()
-        self.display.stop()
+        if self.mainThread:
+            self.mainThread.join()
+            self.mainThread = None
+        if self.controller:
+            self.controller.pdo.tx[1].stop()
+            self.controller.nmt.state = 'STOPPED'
+            self.controller = None
+        if self.network:
+            self.network.disconnect()
+            self.network = None
+        if self.display:
+            self.display.stop()
+            self.display = None
 
     def mainloop(self):
         next_state = State.OFFLINE
@@ -56,18 +64,23 @@ class Eva(object):
             self.state = next_state
 
     def offline(self):
+        self.connected(False)
+        if self.monitorThread:
+            self.monitorThread.join()
+            self.monitorThread = None
         nmt_state = None
         try:
-            nmt_state = self.controller.nmt.wait_for_heartbeat(10)
+            nmt_state = self.controller.nmt.wait_for_heartbeat(0.1)
         except canopen.nmt.NmtError as e:
-            print(e)
+            pass
         if nmt_state:
+            self.connected(True)
             return State.INIT
         return State.OFFLINE
 
     def init(self):
         self.controller.nmt.state = 'PRE-OPERATIONAL'
-        self.controller.sdo['Producer heartbeat time'].raw = 1000
+        self.controller.sdo['Producer heartbeat time'].raw = 100
         self.controller.pdo.tx[1].clear()
         self.controller.pdo.tx[1].add_variable(0x2110, 1)
         self.controller.pdo.tx[1].trans_type = 254
@@ -76,23 +89,52 @@ class Eva(object):
         self.controller.pdo.save()
         self.controller.pdo.tx[1].add_callback(callback=self.received)
         self.controller.nmt.state = 'OPERATIONAL'
+        if self.monitorThread:
+            print('Monitor thread not gone')
+        else:
+            self.monitorThread = Thread(target=self.monitor_heartbeat)
+            self.monitorThread.start()
         return State.ONLINE
 
     def online(self):
-        self.controller.pdo.tx[1].wait_for_reception()
+        # self.controller.pdo.tx[1].wait_for_reception()
         # speed = self.controller.pdo.tx[1]['Variable Int32.cycles per second'].phys
         # print('Received PDO: %s' % speed)
-        return State.ONLINE
+        time.sleep(0.1)
+        if self.heartbeat:
+            return State.ONLINE
+        else:
+            return State.OFFLINE
 
     def received(self, message):
         for var in message:
             self.display.display.set_torque(var.raw)
+
+    def monitor_heartbeat(self):
+        while True:
+            nmt_state = None
+            try:
+                nmt_state = self.controller.nmt.wait_for_heartbeat(0.2)
+            except canopen.nmt.NmtError as e:
+                pass
+            if nmt_state:
+                self.connected(True)
+            else:
+                self.connected(False)
+                break
+
+    def connected(self, connected):
+        if self.display:
+            if self.display.display:
+                self.display.display.connected(connected)
+        self.heartbeat = connected
 
 
 eva = Eva()
 
 
 def handler(signum, frame):
+    print('Stopping EVA')
     eva.stop()
 
 
@@ -107,6 +149,7 @@ def main():
 
     print('Starting EVA')
     eva.start(args)
+    eva.stop()
     return 0
 
 
