@@ -7,15 +7,15 @@
     font_size: dp(20)
 
 <Display>:
-    torque_gauge: torque_gauge
-    torque_label: torque_label
-    force_select_button: force_select_button
+    _force_gauge: force_gauge
+    force_label: force_label
+    force_measure_label: force_measure_label
     max_force_select: max_force_select
     force_select_display: force_select_display
     connected_color: connected_color
     id: display
     border: 0
-    page: 1
+    page: 2
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
@@ -31,7 +31,6 @@
             id: force_select_display
             text: '60 kg'
         BoxLayout:
-            orientation: 'horizontal'
             Slider:
                 id: max_force_select
                 size_hint: .8, None
@@ -51,6 +50,69 @@
             text: 'Ok'
             on_press: display.page = 1
 
+    BoxLayout:
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        spacing: 1
+        orientation: 'vertical'
+        BoxLayout:
+            Label:
+                text: '50kg'
+            Label:
+                text: '60kg'
+            Label:
+                text: '70kg'
+            Label:
+                text: '80kg'
+            Label:
+                text: '90kg'
+            Label:
+                text: '100kg'
+            Label:
+                text: '130kg'
+        BoxLayout:
+            Label:
+                id: fifty_label
+                text: '0'
+            Label:
+                id: sixty_label
+                text: '0'
+            Label:
+                id: seventy_label
+                text: '0'
+            Label:
+                id: eighty_label
+                text: '0'
+            Label:
+                id: ninety_label
+                text: '0'
+            Label:
+                id: hundret_label
+                text: '0'
+            Label:
+                id: onethirty_label
+                text: '0'
+        BoxLayout:
+            Label:
+                text: 'Aktueller Messwert'
+            Label:
+                id: force_measure_label
+                text: '0'
+        BoxLayout:
+            Button:
+                text: '<'
+            Button:
+                text: 'Übernehmen'
+            Button:
+                text: '>'
+        Button:
+            text: 'Zurück'
+            on_press: display.page = 2
+
     # the last page is always displayed first on top. If the default page is another one, all above pages slide to the
     # right when the app starts.
     BoxLayout:
@@ -63,23 +125,19 @@
                 pos: self.pos
                 size: self.size
         Gauge:
-            id: torque_gauge
+            id: force_gauge
             size_hint: 1, .9
         BoxLayout:
             size_hint: 1, .1
-            orientation: 'horizontal'
             Connected:
                 id: connected_color
                 size_hint: None, 1
                 width: self.height
-            Label:
-                text: 'Zugkraft'
             Button:
-                id: force_select_button
-                text: '60 kg'
-                on_press: display.page = 0
+                text: 'Kalibrieren'
+                on_press: display.page = 1
             Label:
                 text: 'Aktuell'
             Label:
-                id: torque_label
+                id: force_label
                 text: '0 kg'

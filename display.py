@@ -29,16 +29,16 @@ class Connected(Widget):
 
 
 class Display(PageLayout):
-    torque_gauge = ObjectProperty(None)
-    torque_label = ObjectProperty(None)
-    force_select_button = ObjectProperty(None)
+    _force_gauge = ObjectProperty(None)
+    force_label = ObjectProperty(None)
+    force_measure_label = ObjectProperty(None)
     max_force_select = ObjectProperty(None)
     force_select_display = ObjectProperty(None)
     connected_color = ObjectProperty(None)
 
     def set_torque(self, value):
-        self.torque_gauge.value = value
-        self.torque_label.text = str(value) + " kg"
+        self._force_gauge.value = value
+        self.force_label.text = str(value) + " kg"
 
     def biplace(self, value):
         if value:
@@ -50,7 +50,6 @@ class Display(PageLayout):
 
     def select_force(self, value):
         self.force_select_display.text = str(value) + " kg"
-        self.force_select_button.text = str(value) + " kg"
 
     def connected(self, connected):
         self.connected_color.connected(connected)
