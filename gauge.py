@@ -59,5 +59,5 @@ class Gauge(Widget):
         self.img_needle.center = (self.scat_needle.width / 2, self.scat_needle.height / 2)
         self._turn()
 
-    def _turn(self):
+    def _turn(self, *args):
         self.scat_needle.rotation = 90 - (self.value * self.unit)
