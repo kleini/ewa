@@ -1,6 +1,9 @@
 import argparse
 import canopen
+import json
+import io
 import logging
+import os.path
 import signal
 import sys
 import time
@@ -20,8 +23,16 @@ class ForceMapping(object):
         else:
             raise Exception('No such key ' + key)
 
+    def write(self):
+        file = io.open("mapping.json", "wb")
+        json.dump(self._map, file)
+        file.close()
 
-
+    def read(self):
+        if os.path.isfile("mapping.json"):
+            file = io.open("mapping.json", "rb")
+            self._map = json.load(file)
+            file.close()
 
 
 class State(Enum):
@@ -32,6 +43,7 @@ class State(Enum):
 
 class Eva(object):
     def __init__(self):
+        self._mapping = ForceMapping()
         self._display = None
         self._run = True
         self._state = State.OFFLINE
@@ -42,6 +54,7 @@ class Eva(object):
         self._heartbeat = False
 
     def start(self, args):
+        self._mapping.read()
         self._display = DisplayApp(args.d)
         self._network = canopen.Network()
         self._network.connect(bustype='socketcan', channel=args.dev)
@@ -53,6 +66,10 @@ class Eva(object):
 
     def stop(self):
         self._run = False
+        self._mapping.write()
+        if self._monitor_thread:
+            self._monitor_thread.join()
+            self._monitor_thread = None
         if self._main_thread:
             self._main_thread.join()
             self._main_thread = None
@@ -126,7 +143,7 @@ class Eva(object):
             self._display.display.set_torque(var.raw)
 
     def monitor_heartbeat(self):
-        while True:
+        while self._run:
             nmt_state = None
             try:
                 nmt_state = self._controller.nmt.wait_for_heartbeat(0.2)
