@@ -37,8 +37,13 @@ class Display(PageLayout):
     connected_color = ObjectProperty(None)
 
     def set_torque(self, value):
-        self._force_gauge.value = value
         self.force_label.text = str(value) + " kg"
+        # don't fall into errorvalue
+        if value > 150:
+            value = 150
+        elif value < 0:
+            value = 0
+        self._force_gauge.value = value
 
     def biplace(self, value):
         if value:

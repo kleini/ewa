@@ -1,4 +1,5 @@
 import argparse
+import bisect
 import canopen
 import json
 import io
@@ -8,6 +9,7 @@ import signal
 import sys
 import time
 from canopen import nmt
+from collections import OrderedDict
 from display import DisplayApp
 from enum import Enum
 from threading import Thread
@@ -15,7 +17,9 @@ from threading import Thread
 
 class ForceMapping(object):
     def __init__(self):
-        self._map = {0: 0, 50: 0, 60: 0, 70: 0, 80: 0, 90: 0, 100: 0, 130: 0}
+        self._map = dict([(0, 0), (50, 500), (60, 600), (70, 700), (80, 800), (90, 900), (100, 1000), (130, 1300)])
+        self._reverse = self.reverse(self._map)
+        print("Testo %s" % self._reverse)
 
     def configure(self, key, value):
         if key in self._map:
@@ -33,6 +37,30 @@ class ForceMapping(object):
             file = io.open("mapping.json", "rb")
             self._map = json.load(file)
             file.close()
+            for key in self._map:
+                self._map[int(key)] = self._map.pop(key)
+            self._reverse = self.reverse(self._map)
+
+    def reverse(self, omap):
+        return OrderedDict(sorted([(t[1], t[0]) for t in omap.items()], key=lambda t: t[0]))
+
+    def map(self, value):
+        if value in self._reverse:
+            return self._reverse[value]
+        length = len(self._reverse)
+        pos = bisect.bisect_left(self._reverse.keys(), value)
+        if length == pos:
+            pos = length - 1
+
+        elif 0 == pos:
+            pos = 1
+        key1 = self._reverse.keys()[pos-1]
+        key2 = self._reverse.keys()[pos]
+        value1 = self._reverse[key1]
+        value2 = self._reverse[key2]
+        pitch = float(value2 - value1) / float(key2 - key1)
+        retval = pitch * (value - key1) + value1
+        return int(retval)
 
 
 class State(Enum):
@@ -54,7 +82,7 @@ class Eva(object):
         self._heartbeat = False
 
     def start(self, args):
-        self._mapping.read()
+        # TODO self._mapping.read()
         self._display = DisplayApp(args.d)
         self._network = canopen.Network()
         self._network.connect(bustype='socketcan', channel=args.dev)
@@ -140,7 +168,7 @@ class Eva(object):
 
     def received(self, message):
         for var in message:
-            self._display.display.set_torque(var.raw)
+            self._display.display.set_torque(self._mapping.map(var.raw))
 
     def monitor_heartbeat(self):
         while self._run:
