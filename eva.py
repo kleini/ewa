@@ -19,13 +19,16 @@ class ForceMapping(object):
     def __init__(self):
         self._map = dict([(0, 0), (50, 500), (60, 600), (70, 700), (80, 800), (90, 900), (100, 1000), (130, 1300)])
         self._reverse = self.reverse(self._map)
-        print("Testo %s" % self._reverse)
 
     def configure(self, key, value):
         if key in self._map:
             self._map[key] = value
         else:
             raise Exception('No such key ' + key)
+        self._reverse = self.reverse(self._map)
+
+    def get(self, key):
+        return self._map[key]
 
     def write(self):
         file = io.open("mapping.json", "wb")
@@ -82,8 +85,8 @@ class Eva(object):
         self._heartbeat = False
 
     def start(self, args):
-        # TODO self._mapping.read()
-        self._display = DisplayApp(args.d)
+        self._mapping.read()
+        self._display = DisplayApp(args.d, self._mapping)
         self._network = canopen.Network()
         self._network.connect(bustype='socketcan', channel=args.dev)
         self._controller = self._network.add_node(7, 'CANopenSocket.eds')
@@ -168,6 +171,7 @@ class Eva(object):
 
     def received(self, message):
         for var in message:
+            self._display.display.set_measure(var.raw)
             self._display.display.set_torque(self._mapping.map(var.raw))
 
     def monitor_heartbeat(self):
