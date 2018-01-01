@@ -24,6 +24,41 @@ The runtime starter uses Python3.
 
 The display utilizes multiple pages using a Kivy PageLayout.
 
+# Install Guide
+
+Start with Raspbian Stretch lite image.
+
+## raspi-config
+
+* hostname eva
+* timezone Europe/Berlin
+* keyboard: German
+* enable SSH
+* enable I²C
+
+## Basic configuration
+
+Copy SSH key.
+
+## /etc/network/interfaces.d/eth0
+
+    auto eth0
+    iface eth0 inet static
+        address 192.168.168.37
+        netmask 255.255.255.0
+        gateyway 192.168.168.1
+
+## Packages
+
+* nix
+
+## s-usv
+
+Use the correct version for the used version of the hardware:
+[Download](https://shop.olmatic.de/de/content/7-downloads) 
+
+    /opt/susvd/susvd -start
+
 # CANopen
 
 ## PDO
