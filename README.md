@@ -40,6 +40,16 @@ Start with Raspbian Stretch lite image.
 
 Copy SSH key.
 
+    dpkg-reconfigure locales # enable de-DE.UTF-8
+
+## boot options
+
+Enable the following options in /boot/config.txt
+
+    dtparam=spi=on
+    dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
+    dtoverlay=spi-bcm2835
+
 ## /etc/network/interfaces.d/eth0
 
     auto eth0
@@ -48,9 +58,49 @@ Copy SSH key.
         netmask 255.255.255.0
         gateyway 192.168.168.1
 
+## /etc/network/interfaces.d/can0
+
+    auto can0
+    iface can0 can static
+        bitrate 125000
+        loopback off
+        restart-ms 100
+
 ## Packages
 
-* nix
+* git
+
+## Install VC libraries
+
+    cd /tmp
+    git clone --depth 1 https://github.com/Hexxeh/rpi-firmware.git
+    cp -rv /tmp/rpi-firmware/vc/hardfp/opt/vc /opt
+    echo "/opt/vc/lib" >/etc/ld.so.conf.d/vc.conf
+    ldconfig
+
+## EVA
+
+The following commands are necessary to get a working version of Python Kivy and canopen library:
+
+    sudo echo "deb http://archive.mitako.eu/ jessie main" > /etc/apt/sources.list.d/mitako.list
+    curl -L http://archive.mitako.eu/archive-mitako.gpg.key | sudo apt-key add -
+    sudo apt update
+    sudo apt install python3-kivypie
+
+    pip install --upgrade --force-reinstall git+https://github.com/kivy/kivy.git@master
+
+    pip3 install canopen
+    sudo chmod o+rw /dev/vchiq
+
+Install the EVA code:
+
+    git clone git@github.com:kleini/eva.git
+
+### Packages to ease debugging work
+
+* vi
+* can-utils
+* i2c-utils
 
 ## s-usv
 
@@ -58,6 +108,10 @@ Use the correct version for the used version of the hardware:
 [Download](https://shop.olmatic.de/de/content/7-downloads) 
 
     /opt/susvd/susvd -start
+
+Remove fake clock
+
+    apt purge -y fake-hwclock
 
 # CANopen
 

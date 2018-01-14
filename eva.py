@@ -31,15 +31,15 @@ class ForceMapping(object):
         return self._map[key]
 
     def write(self):
-        file = io.open("mapping.json", "wb")
-        json.dump(self._map, file)
-        file.close()
+        with open("mapping.json", "w") as file:
+            # TODO catch write issues
+            json.dump(self._map, file)
 
     def read(self):
         if os.path.isfile("mapping.json"):
-            file = io.open("mapping.json", "rb")
-            self._map = json.load(file)
-            file.close()
+            with open("mapping.json", "r") as file:
+                # TODO catch read problem
+                self._map = json.load(file)
             for key in self._map:
                 self._map[int(key)] = self._map.pop(key)
             self._reverse = self.reverse(self._map)
@@ -72,6 +72,7 @@ class State(Enum):
     ONLINE = 2
 
 
+# TODO daemon goes into STOPPED state. Resolve STOPPED state. Use fast writing to cause STOPPED state.
 class Eva(object):
     def __init__(self):
         self._mapping = ForceMapping()
