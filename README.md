@@ -56,7 +56,8 @@ Enable the following options in /boot/config.txt
     iface eth0 inet static
         address 192.168.168.37
         netmask 255.255.255.0
-        gateyway 192.168.168.1
+        gateway 192.168.168.1
+        dns-nameservers 192.168.168.1
 
 ## /etc/network/interfaces.d/can0
 
