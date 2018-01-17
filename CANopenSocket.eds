@@ -9799,6 +9799,13 @@ AccessType=rww
 PDOMapping=1
 DefaultValue=0
 
+[3216]
+ParameterName=Throttle Command
+ObjectType=7
+DataType=0x0006
+AccessType=ro
+PDOMapping=0
+
 [6000]
 ParameterName=Read input 8 bit
 ObjectType=8

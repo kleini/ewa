@@ -85,8 +85,9 @@ The following commands are necessary to get a working version of Python Kivy and
     sudo echo "deb http://archive.mitako.eu/ jessie main" > /etc/apt/sources.list.d/mitako.list
     curl -L http://archive.mitako.eu/archive-mitako.gpg.key | sudo apt-key add -
     sudo apt update
-    sudo apt install python3-kivypie
+    sudo apt install python3-kivypie python2-kivypie
 
+    # Does not work
     pip install --upgrade --force-reinstall git+https://github.com/kivy/kivy.git@master
 
     pip3 install canopen
@@ -101,6 +102,7 @@ Install the EVA code:
 * vi
 * can-utils
 * i2c-utils
+* https://github.com/CANopenNode/CANopenSocket
 
 ## s-usv
 

@@ -143,15 +143,20 @@ class Eva(object):
         return State.OFFLINE
 
     def init(self):
+        # TODO somewhere here SDO timeouts may occur.
         self._controller.nmt.state = 'PRE-OPERATIONAL'
         self._controller.sdo['Producer heartbeat time'].raw = 100
         self._controller.pdo.tx[1].clear()
+        # TODO replace with Throttle_Command 0x3216, subindex 0 length 2 readonly
         self._controller.pdo.tx[1].add_variable(0x2110, 1)
+        # Asynchronous PDO. If one process variable changes, the data is transfered.
         self._controller.pdo.tx[1].trans_type = 254
+        # Transmit at least every 1000 milliseconds.
         self._controller.pdo.tx[1].event_timer = 1000
         self._controller.pdo.tx[1].enabled = True
         self._controller.pdo.save()
         self._controller.pdo.tx[1].add_callback(callback=self.received)
+        # TODO With the initialisation problem the emulator will not go back into operational mode and we get no data.
         self._controller.nmt.state = 'OPERATIONAL'
         if self._monitor_thread:
             print('Monitor thread not gone')

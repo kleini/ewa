@@ -1,0 +1,13 @@
+[Unit]
+After=sys-subsystem-net-devices-eth0.device
+
+[Service]
+User=pi
+PermissionsStartOnly=true
+TimeoutStartSec=0
+ExecStartPre=/bin/chmod o+rw /dev/vchiq
+ExecStart=/home/pi/eva/dev -- -i 3 can0
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
