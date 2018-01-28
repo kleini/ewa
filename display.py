@@ -54,13 +54,16 @@ class Display(PageLayout):
         self.highlight(self._label_index)
 
     def set_torque(self, value):
-        self.force_label.text = str(value) + " kg"
-        # don't fall into errorvalue
-        if value > 150:
-            value = 150
-        elif value < 0:
-            value = 0
-        self._force_gauge.value = value
+        try:
+            self.force_label.text = str(value) + " kg"
+            # don't fall into errorvalue
+            if value > 150:
+                value = 150
+            elif value < 0:
+                value = 0
+            self._force_gauge.value = value
+        except Exception as e:
+            print e.message
 
     def biplace(self, value):
         if value:
