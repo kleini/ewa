@@ -82,6 +82,7 @@ class Eva(object):
         self._network = None
         self._controller = None
         self._main_thread = Thread(target=self.mainloop)
+        self._read = False
         self._monitor_thread = None
         self._heartbeat = False
 
@@ -94,14 +95,21 @@ class Eva(object):
         # main EVA thread here
         self._main_thread.start()
         # blocks until the UI ends
-        self._display.run()
+        try:
+            self._display.run()
+        except Exception as e:
+            print e.message
 
     def stop(self):
         self._run = False
+        self._read = False
         self._mapping.write()
         if self._monitor_thread:
             self._monitor_thread.join()
             self._monitor_thread = None
+        if self._read_thread:
+            self._read_thread.join()
+            self._read_thread = None
         if self._main_thread:
             self._main_thread.join()
             self._main_thread = None
@@ -119,6 +127,7 @@ class Eva(object):
     def mainloop(self):
         next_state = State.OFFLINE
         while self._run:
+            #print('%s' % self._state)
             if State.OFFLINE == self._state:
                 next_state = self.offline()
             if State.INIT == self._state:
@@ -128,11 +137,21 @@ class Eva(object):
             self._state = next_state
 
     def offline(self):
+        if self._read:
+            self._read = False
+            print('Stop')
+            self._read_thread.join()
+            self._read_thread = None
         self.connected(False)
         if self._monitor_thread:
             self._monitor_thread.join()
             self._monitor_thread = None
         nmt_state = None
+        try:
+            self._controller.nmt.state = 'PRE-OPERATIONAL'
+            self._controller.sdo['Producer heartbeat time'].raw = 50
+        except:
+            print('Heartbeat write failed')
         try:
             nmt_state = self._controller.nmt.wait_for_heartbeat(0.1)
         except canopen.nmt.NmtError as e:
@@ -145,17 +164,23 @@ class Eva(object):
     def init(self):
         # TODO somewhere here SDO timeouts may occur.
         self._controller.nmt.state = 'PRE-OPERATIONAL'
-        self._controller.sdo['Producer heartbeat time'].raw = 100
+        self._controller.sdo['Producer heartbeat time'].raw = 50
+        #self._controller.pdo.read()
         self._controller.pdo.tx[1].clear()
         # TODO replace with Throttle_Command 0x3216, subindex 0 length 2 readonly
-        self._controller.pdo.tx[1].add_variable(0x2110, 1)
+        #self._controller.pdo.tx[1].add_variable(0x1017, 0)
         # Asynchronous PDO. If one process variable changes, the data is transfered.
-        self._controller.pdo.tx[1].trans_type = 254
+        #self._controller.pdo.tx[1].trans_type = 254
         # Transmit at least every 1000 milliseconds.
-        self._controller.pdo.tx[1].event_timer = 1000
-        self._controller.pdo.tx[1].enabled = True
-        self._controller.pdo.save()
-        self._controller.pdo.tx[1].add_callback(callback=self.received)
+        #self._controller.pdo.tx[1].event_timer = 1000
+        #self._controller.pdo.tx[1].enabled = True
+        #self._controller.pdo.save()
+        if not self._read:
+            self._read = True
+            print('Start')
+            self._read_thread = Thread(target=self.read)
+            self._read_thread.start()
+        #self._controller.pdo.tx[1].add_callback(callback=self.received)
         # TODO With the initialisation problem the emulator will not go back into operational mode and we get no data.
         self._controller.nmt.state = 'OPERATIONAL'
         if self._monitor_thread:
@@ -164,6 +189,13 @@ class Eva(object):
             self._monitor_thread = Thread(target=self.monitor_heartbeat)
             self._monitor_thread.start()
         return State.ONLINE
+
+    def read(self):
+        while self._read:
+            value = self._controller.sdo[0x3216].raw
+            #print('Value %d' % value)
+            self.show_data(value)
+            time.sleep(0.2)
 
     def online(self):
         # self.controller.pdo.tx[1].wait_for_reception()
@@ -177,8 +209,12 @@ class Eva(object):
 
     def received(self, message):
         for var in message:
-            self._display.display.set_measure(var.raw)
-            self._display.display.set_torque(self._mapping.map(var.raw))
+            self.show_data(var.raw)
+            
+    def show_data(self, value):
+        if self._display and self._display.display:
+            self._display.display.set_measure(value)
+            self._display.display.set_torque(self._mapping.map(value))
 
     def monitor_heartbeat(self):
         while self._run:
