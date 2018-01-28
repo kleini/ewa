@@ -192,9 +192,11 @@ class Eva(object):
 
     def read(self):
         while self._read:
-            value = self._controller.sdo[0x3216].raw
-            #print('Value %d' % value)
-            self.show_data(value)
+            try:
+                value = self._controller.sdo[0x3216].raw
+                self.show_data(value)
+            except canopen.sdo.SdoAbortedError as e:
+                print('Reading Throttle_Command failed')
             time.sleep(0.2)
 
     def online(self):
