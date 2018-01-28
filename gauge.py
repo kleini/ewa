@@ -1,6 +1,7 @@
 import inspect
 import os
-
+import logging
+import traceback
 from kivy.properties import BoundedNumericProperty
 from kivy.properties import NumericProperty
 from kivy.properties import StringProperty
@@ -41,23 +42,27 @@ class Gauge(Widget):
         self.bind(value=self._turn)
 
     def _update(self, *args):
-        # images are 1024 x 1024, but only top 552 pixels contain the gauge
-        height = min(self.height, self.width * 552 / 1024)
-        width = min(self.width, self.height * 1024 / 552)
+        try:
+            # images are 1024 x 1024, but only top 552 pixels contain the gauge
+            height = min(self.height, self.width * 552 / 1024)
+            width = min(self.width, self.height * 1024 / 552)
 
-        # modify size first otherwise center placing is done with old size
-        self.scat_gauge.size = (width, width)
-        self.scat_gauge.center = (self.center_x, self.y + height - width / 2)
-        # image positioning relative to scat_gauge and not to window and again first size to have correct center
-        # positioning
-        self.img_gauge.size = self.scat_gauge.size
-        self.img_gauge.center = (self.scat_gauge.width / 2, self.scat_gauge.height / 2)
+            # modify size first otherwise center placing is done with old size
+            self.scat_gauge.size = (width, width)
+            self.scat_gauge.center = (self.center_x, self.y + height - width / 2)
+            # image positioning relative to scat_gauge and not to window and again first size to have correct center
+            # positioning
+            self.img_gauge.size = self.scat_gauge.size
+            self.img_gauge.center = (self.scat_gauge.width / 2, self.scat_gauge.height / 2)
 
-        self.scat_needle.size = self.scat_gauge.size
-        self.scat_needle.center = self.scat_gauge.center
-        self.img_needle.size = self.scat_needle.size
-        self.img_needle.center = (self.scat_needle.width / 2, self.scat_needle.height / 2)
-        self._turn()
+            self.scat_needle.size = self.scat_gauge.size
+            self.scat_needle.center = self.scat_gauge.center
+            self.img_needle.size = self.scat_needle.size
+            self.img_needle.center = (self.scat_needle.width / 2, self.scat_needle.height / 2)
+            self._turn()
+        except BaseException as e:
+            logging.error(traceback.format_exc())
+
 
     def _turn(self, *args):
         self.scat_needle.rotation = 90 - (self.value * self.unit)
