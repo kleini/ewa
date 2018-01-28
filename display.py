@@ -1,3 +1,5 @@
+import logging
+import traceback
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
@@ -62,8 +64,8 @@ class Display(PageLayout):
             elif value < 0:
                 value = 0
             self._force_gauge.value = value
-        except Exception as e:
-            print e.message
+        except BaseException as e:
+            logging.error(traceback.format_exc())
 
     def biplace(self, value):
         if value:

@@ -7,6 +7,7 @@ import os.path
 import signal
 import sys
 import time
+import traceback
 from canopen import nmt
 from collections import OrderedDict
 from display import DisplayApp
@@ -74,6 +75,7 @@ class State(Enum):
 # TODO daemon goes into STOPPED state. Resolve STOPPED state. Use fast writing to cause STOPPED state.
 class Eva(object):
     def __init__(self):
+        self._PDO = False
         self._mapping = ForceMapping()
         self._display = None
         self._run = True
@@ -82,6 +84,7 @@ class Eva(object):
         self._controller = None
         self._main_thread = Thread(target=self.mainloop)
         self._read = False
+        self._read_thread = None
         self._monitor_thread = None
         self._heartbeat = False
 
@@ -96,8 +99,8 @@ class Eva(object):
         # blocks until the UI ends
         try:
             self._display.run()
-        except Exception as e:
-            print e.message
+        except BaseException as e:
+            logging.error(traceback.format_exc())
 
     def stop(self):
         self._run = False
@@ -136,11 +139,12 @@ class Eva(object):
             self._state = next_state
 
     def offline(self):
-        if self._read:
-            self._read = False
-            print('Stop')
-            self._read_thread.join()
-            self._read_thread = None
+        if not self._PDO:
+            if self._read:
+                self._read = False
+                print('Stop')
+                self._read_thread.join()
+                self._read_thread = None
         self.connected(False)
         if self._monitor_thread:
             self._monitor_thread.join()
@@ -149,8 +153,8 @@ class Eva(object):
         try:
             self._controller.nmt.state = 'PRE-OPERATIONAL'
             self._controller.sdo['Producer heartbeat time'].raw = 50
-        except:
-            print('Heartbeat write failed')
+        except BaseException as e:
+            logging.error(traceback.format_exc())
         try:
             nmt_state = self._controller.nmt.wait_for_heartbeat(0.1)
         except canopen.nmt.NmtError as e:
@@ -164,22 +168,24 @@ class Eva(object):
         # TODO somewhere here SDO timeouts may occur.
         self._controller.nmt.state = 'PRE-OPERATIONAL'
         self._controller.sdo['Producer heartbeat time'].raw = 50
-        #self._controller.pdo.read()
-        self._controller.pdo.tx[1].clear()
-        # TODO replace with Throttle_Command 0x3216, subindex 0 length 2 readonly
-        #self._controller.pdo.tx[1].add_variable(0x1017, 0)
-        # Asynchronous PDO. If one process variable changes, the data is transfered.
-        #self._controller.pdo.tx[1].trans_type = 254
-        # Transmit at least every 1000 milliseconds.
-        #self._controller.pdo.tx[1].event_timer = 1000
-        #self._controller.pdo.tx[1].enabled = True
-        #self._controller.pdo.save()
-        if not self._read:
-            self._read = True
-            print('Start')
-            self._read_thread = Thread(target=self.read)
-            self._read_thread.start()
-        #self._controller.pdo.tx[1].add_callback(callback=self.received)
+        if self._PDO:
+            self._controller.pdo.read()
+            self._controller.pdo.tx[1].clear()
+            # TODO replace with Throttle_Command 0x3216, subindex 0 length 2 readonly
+            self._controller.pdo.tx[1].add_variable(0x2110, 1)
+            # Asynchronous PDO. If one process variable changes, the data is transfered.
+            self._controller.pdo.tx[1].trans_type = 254
+            # Transmit at least every 1000 milliseconds.
+            self._controller.pdo.tx[1].event_timer = 1000
+            self._controller.pdo.tx[1].enabled = True
+            self._controller.pdo.save()
+            self._controller.pdo.tx[1].add_callback(callback=self.received)
+        else:
+            if not self._read:
+                self._read = True
+                print('Start')
+                self._read_thread = Thread(target=self.read)
+                self._read_thread.start()
         # TODO With the initialisation problem the emulator will not go back into operational mode and we get no data.
         self._controller.nmt.state = 'OPERATIONAL'
         if self._monitor_thread:
@@ -194,14 +200,11 @@ class Eva(object):
             try:
                 value = self._controller.sdo[0x3216].raw
                 self.show_data(value)
-            except canopen.sdo.SdoAbortedError as e:
+            except canopen.sdo.SdoError as e:
                 print('Reading Throttle_Command failed')
-            time.sleep(0.2)
+            time.sleep(0.1)
 
     def online(self):
-        # self.controller.pdo.tx[1].wait_for_reception()
-        # speed = self.controller.pdo.tx[1]['Variable Int32.cycles per second'].phys
-        # print('Received PDO: %s' % speed)
         time.sleep(0.1)
         if self._heartbeat:
             return State.ONLINE
@@ -211,8 +214,9 @@ class Eva(object):
     def received(self, message):
         for var in message:
             self.show_data(var.raw)
-            
+
     def show_data(self, value):
+        # print('Throttle_Command: ' + str(value))
         if self._display and self._display.display:
             self._display.display.set_measure(value)
             self._display.display.set_torque(self._mapping.map(value))

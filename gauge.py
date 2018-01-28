@@ -65,4 +65,7 @@ class Gauge(Widget):
 
 
     def _turn(self, *args):
-        self.scat_needle.rotation = 90 - (self.value * self.unit)
+        try:
+            self.scat_needle.rotation = 90 - (self.value * self.unit)
+        except BaseException as e:
+            logging.error(traceback.format_exc())
