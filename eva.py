@@ -2,7 +2,6 @@ import argparse
 import bisect
 import canopen
 import json
-import io
 import logging
 import os.path
 import signal
@@ -17,7 +16,7 @@ from threading import Thread
 
 class ForceMapping(object):
     def __init__(self):
-        self._map = dict([(0, 0), (50, 500), (60, 600), (70, 700), (80, 800), (90, 900), (100, 1000), (130, 1300)])
+        self._map = dict([(0, 0), (50, 5826), (60, 6783), (70, 7209), (80, 8177), (90, 8816), (100, 9498), (130, 11469)])
         self._reverse = self.reverse(self._map)
 
     def configure(self, key, value):
