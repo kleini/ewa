@@ -9802,7 +9802,7 @@ DefaultValue=0
 [3216]
 ParameterName=Throttle Command
 ObjectType=7
-DataType=0x0006
+DataType=0x0007
 AccessType=ro
 PDOMapping=0
 
