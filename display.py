@@ -67,7 +67,7 @@ class Tow(Screen):
                 value = 150
             elif value < 0:
                 value = 0
-            self._force_gauge.value = value
+            self._force_gauge.set_value(value)
         except BaseException as e:
             logging.error(traceback.format_exc())
 
@@ -146,7 +146,6 @@ class DisplayApp(App):
         self._calibrate = Calibrate(self._mapping)
         display.add_widget(self._calibrate)
         display.add_widget(ForceSelect())
-        display.current = 'forceselect'
         return display
 
     def connected(self, connected):
