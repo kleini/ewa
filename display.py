@@ -2,10 +2,14 @@ import logging
 import traceback
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.properties import ObjectProperty
-from kivy.uix.pagelayout import PageLayout
 from kivy.graphics import Color, Ellipse
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.widget import Widget
+
+
+Builder.load_file('display.kv')
 
 
 class Connected(Widget):
@@ -13,7 +17,7 @@ class Connected(Widget):
         super(Connected, self).__init__(**kwargs)
         with self.canvas:
             self.color = Color(1, 0, 0)
-            self.circle = Ellipse(pos=self.pos, size=self.size)
+            self._circle = Ellipse(pos=self.pos, size=self.size)
         self.bind(pos=self.draw, size=self.draw)
 
     def connected(self, connected):
@@ -26,38 +30,38 @@ class Connected(Widget):
         self.draw()
 
     def draw(self, *args):
-        self.circle.pos = self.pos
-        self.circle.size = self.size
+        self._circle.pos = self.pos
+        self._circle.size = self.size
 
 
-class Display(PageLayout):
+class ForceSelect(Screen):
+    _max_force_select = ObjectProperty(None)
+    _force_select_display = ObjectProperty(None)
+
+    def biplace(self, value):
+        if value:
+            self._max_force_select.disabled = True
+            self.select_force(130)
+        else:
+            self._max_force_select.disabled = False
+            self.select_force(self._max_force_select.value)
+
+    def select_force(self, value):
+        self._force_select_display.text = str(value) + " kg"
+
+
+class Tow(Screen):
     _force_gauge = ObjectProperty(None)
-    force_label = ObjectProperty(None)
-    _fifty_label = ObjectProperty(None)
-    _sixty_label = ObjectProperty(None)
-    _seventy_label = ObjectProperty(None)
-    _eighty_label = ObjectProperty(None)
-    _ninety_label = ObjectProperty(None)
-    _hundret_label = ObjectProperty(None)
-    _onethirty_label = ObjectProperty(None)
-    _force_measure_label = ObjectProperty(None)
-    max_force_select = ObjectProperty(None)
-    force_select_display = ObjectProperty(None)
-    connected_color = ObjectProperty(None)
-    _label_index = 0
+    _force_label = ObjectProperty(None)
+    _connected_color = ObjectProperty(None)
 
-    def __init__(self, mapping, **kwargs):
-        super(Display, self).__init__(**kwargs)
-        self._mapping = mapping
-        self._labels = [(self._fifty_label, 50), (self._sixty_label, 60), (self._seventy_label, 70),
-                        (self._eighty_label, 80), (self._ninety_label, 90), (self._hundret_label, 100),
-                        (self._onethirty_label, 130)]
-        self.read_label()
-        self.highlight(self._label_index)
+    def connected(self, connected):
+        self._connected_color.connected(connected)
 
     def set_torque(self, value):
         try:
-            self.force_label.text = str(value) + " kg"
+            self._force_label.text = "      "
+            self._force_label.text = str(value) + " kg"
             # don't fall into errorvalue
             if value > 150:
                 value = 150
@@ -67,26 +71,33 @@ class Display(PageLayout):
         except BaseException as e:
             logging.error(traceback.format_exc())
 
-    def biplace(self, value):
-        if value:
-            self.max_force_select.disabled = True
-            self.select_force(130)
-        else:
-            self.max_force_select.disabled = False
-            self.select_force(self.max_force_select.value)
 
-    def select_force(self, value):
-        self.force_select_display.text = str(value) + " kg"
+class Calibrate(Screen):
+    _fifty_label = ObjectProperty(None)
+    _sixty_label = ObjectProperty(None)
+    _seventy_label = ObjectProperty(None)
+    _eighty_label = ObjectProperty(None)
+    _ninety_label = ObjectProperty(None)
+    _hundret_label = ObjectProperty(None)
+    _onethirty_label = ObjectProperty(None)
+    _force_measure_label = ObjectProperty(None)
+    _label_index = 0
 
-    def connected(self, connected):
-        self.connected_color.connected(connected)
-
-    def set_measure(self, value):
-        self._force_measure_label.text = str(value)
+    def __init__(self, mapping, **kwargs):
+        super(Calibrate, self).__init__(**kwargs)
+        self._mapping = mapping
+        self._labels = [(self._fifty_label, 50), (self._sixty_label, 60), (self._seventy_label, 70),
+                        (self._eighty_label, 80), (self._ninety_label, 90), (self._hundret_label, 100),
+                        (self._onethirty_label, 130)]
+        self.read_label()
+        self.highlight(self._label_index)
 
     def read_label(self):
         for (label, key) in self._labels:
             label.text = str(self._mapping.get(key))
+
+    def set_measure(self, value):
+        self._force_measure_label.text = str(value)
 
     def take_over(self):
         value = self._force_measure_label.text
@@ -113,15 +124,39 @@ class Display(PageLayout):
         self._labels[self._label_index][0].text = '[color=ff0000]' + self._labels[self._label_index][0].text + '[/color]'
 
 
+class Display(ScreenManager):
+    pass
+
+
 class DisplayApp(App):
     def __init__(self, devel, mapping):
-        self.devel = devel
+        self._devel = devel
         self._mapping = mapping
-        self.display = None
+        self._tow = None
+        self._calibrate = None
         super(DisplayApp, self).__init__()
 
     def build(self):
-        if self.devel:
+        if self._devel:
             Window.size = (800, 480)
-        self.display = Display(self._mapping)
-        return self.display
+        display = Display()
+        display.transition = NoTransition()
+        self._tow = Tow()
+        display.add_widget(self._tow)
+        self._calibrate = Calibrate(self._mapping)
+        display.add_widget(self._calibrate)
+        display.add_widget(ForceSelect())
+        display.current = 'forceselect'
+        return display
+
+    def connected(self, connected):
+        if self._tow:
+            self._tow.connected(connected)
+
+    def set_measure(self, value):
+        if self._calibrate:
+            self._calibrate.set_measure(value)
+
+    def set_torque(self, value):
+        if self._tow:
+            self._tow.set_torque(value)

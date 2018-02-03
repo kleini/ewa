@@ -1,28 +1,15 @@
-#:kivy 1.0.9
 #:import Gauge gauge
+#:import NoTransition kivy.uix.screenmanager.NoTransition
 
 <Connected>:
 
 <Widget>:
     font_size: dp(20)
 
-<Display>:
-    _force_gauge: force_gauge
-    force_label: force_label
-    _fifty_label: fifty_label
-    _sixty_label: sixty_label
-    _seventy_label: seventy_label
-    _eighty_label: eighty_label
-    _ninety_label: ninety_label
-    _hundret_label: hundret_label
-    _onethirty_label: onethirty_label
-    _force_measure_label: force_measure_label
-    max_force_select: max_force_select
-    force_select_display: force_select_display
-    connected_color: connected_color
-    id: display
-    border: 0
-    page: 2
+<ForceSelect>:
+    name: 'forceselect'
+    _max_force_select: max_force_select
+    _force_select_display: force_select_display
     BoxLayout:
         orientation: 'vertical'
         spacing: 10
@@ -55,17 +42,28 @@
                     on_active: root.biplace(self.active)
         Button:
             text: 'Ok'
-            on_press: display.page = 1
+            on_release: app.root.current = 'tow'
 
+
+<Calibrate>:
+    name: 'calibrate'
+    _fifty_label: fifty_label
+    _sixty_label: sixty_label
+    _seventy_label: seventy_label
+    _eighty_label: eighty_label
+    _ninety_label: ninety_label
+    _hundret_label: hundret_label
+    _onethirty_label: onethirty_label
+    _force_measure_label: force_measure_label
     BoxLayout:
+        spacing: 1
+        orientation: 'vertical'
         canvas.before:
             Color:
                 rgba: 0,0,0,1
             Rectangle:
                 pos: self.pos
                 size: self.size
-        spacing: 1
-        orientation: 'vertical'
         BoxLayout:
             Label:
                 text: '50kg'
@@ -128,12 +126,14 @@
                 on_press: root.next_label()
         Button:
             text: 'Zurück'
-            on_press: display.page = 2
+            on_release: app.root.current = 'tow'
 
-    # the last page is always displayed first on top. If the default page is another one, all above pages slide to the
-    # right when the app starts.
+<Tow>:
+    _force_gauge: force_gauge
+    _force_label: force_label
+    _connected_color: connected_color
+    name: 'tow'
     BoxLayout:
-        spacing: 0
         orientation: 'vertical'
         canvas.before:
             Color:
@@ -152,7 +152,7 @@
                 width: self.height
             Button:
                 text: 'Kalibrieren'
-                on_press: display.page = 1
+                on_release: app.root.current = 'calibrate'
             Label:
                 text: 'Aktuell'
             Label:

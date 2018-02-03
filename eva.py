@@ -75,7 +75,7 @@ class State(Enum):
 # TODO daemon goes into STOPPED state. Resolve STOPPED state. Use fast writing to cause STOPPED state.
 class Eva(object):
     def __init__(self):
-        self._PDO = False
+        self._PDO = True
         self._mapping = ForceMapping()
         self._display = None
         self._run = True
@@ -153,6 +153,8 @@ class Eva(object):
         try:
             self._controller.nmt.state = 'PRE-OPERATIONAL'
             self._controller.sdo['Producer heartbeat time'].raw = 50
+        except canopen.sdo.SdoCommunicationError as e:
+            logging.info('Failed to configure heartbeat.')
         except BaseException as e:
             logging.error(traceback.format_exc())
         try:
@@ -167,7 +169,10 @@ class Eva(object):
     def init(self):
         # TODO somewhere here SDO timeouts may occur.
         self._controller.nmt.state = 'PRE-OPERATIONAL'
-        self._controller.sdo['Producer heartbeat time'].raw = 50
+        try:
+            self._controller.sdo['Producer heartbeat time'].raw = 50
+        except canopen.sdo.SdoCommunicationError as e:
+            logging.info('Failed to configure heartbeat.')
         if self._PDO:
             self._controller.pdo.read()
             self._controller.pdo.tx[1].clear()
@@ -216,10 +221,10 @@ class Eva(object):
             self.show_data(var.raw)
 
     def show_data(self, value):
-        # print('Throttle_Command: ' + str(value))
-        if self._display and self._display.display:
-            self._display.display.set_measure(value)
-            self._display.display.set_torque(self._mapping.map(value))
+        logging.debug('Throttle_Command: ' + str(value))
+        if self._display:
+            self._display.set_measure(value)
+            self._display.set_torque(self._mapping.map(value))
 
     def monitor_heartbeat(self):
         while self._run:
@@ -236,8 +241,7 @@ class Eva(object):
 
     def connected(self, connected):
         if self._display:
-            if self._display.display:
-                self._display.display.connected(connected)
+            self._display.connected(connected)
         self._heartbeat = connected
 
 
