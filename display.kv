@@ -6,6 +6,37 @@
 <Widget>:
     font_size: dp(20)
 
+<Tow>:
+    _force_gauge: force_gauge
+    _force_label: force_label
+    _connected_color: connected_color
+    name: 'tow'
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Gauge:
+            id: force_gauge
+            size_hint: 1, .9
+        BoxLayout:
+            size_hint: 1, .1
+            Connected:
+                id: connected_color
+                size_hint: None, 1
+                width: self.height
+            Button:
+                text: 'Kalibrieren'
+                on_release: app.root.current = 'calibrate'
+            Label:
+                text: 'Aktuell'
+            Label:
+                id: force_label
+                text: '0 kg'
+
 <ForceSelect>:
     name: 'forceselect'
     _max_force_select: max_force_select
@@ -43,7 +74,6 @@
         Button:
             text: 'Ok'
             on_release: app.root.current = 'tow'
-
 
 <Calibrate>:
     name: 'calibrate'
@@ -127,34 +157,3 @@
         Button:
             text: 'Zurück'
             on_release: app.root.current = 'tow'
-
-<Tow>:
-    _force_gauge: force_gauge
-    _force_label: force_label
-    _connected_color: connected_color
-    name: 'tow'
-    BoxLayout:
-        orientation: 'vertical'
-        canvas.before:
-            Color:
-                rgba: 0,0,0,1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Gauge:
-            id: force_gauge
-            size_hint: 1, .9
-        BoxLayout:
-            size_hint: 1, .1
-            Connected:
-                id: connected_color
-                size_hint: None, 1
-                width: self.height
-            Button:
-                text: 'Kalibrieren'
-                on_release: app.root.current = 'calibrate'
-            Label:
-                text: 'Aktuell'
-            Label:
-                id: force_label
-                text: '0 kg'

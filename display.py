@@ -34,22 +34,6 @@ class Connected(Widget):
         self._circle.size = self.size
 
 
-class ForceSelect(Screen):
-    _max_force_select = ObjectProperty(None)
-    _force_select_display = ObjectProperty(None)
-
-    def biplace(self, value):
-        if value:
-            self._max_force_select.disabled = True
-            self.select_force(130)
-        else:
-            self._max_force_select.disabled = False
-            self.select_force(self._max_force_select.value)
-
-    def select_force(self, value):
-        self._force_select_display.text = str(value) + " kg"
-
-
 class Tow(Screen):
     _force_gauge = ObjectProperty(None)
     _force_label = ObjectProperty(None)
@@ -70,6 +54,22 @@ class Tow(Screen):
             self._force_gauge.set_value(value)
         except BaseException as e:
             logging.error(traceback.format_exc())
+
+
+class ForceSelect(Screen):
+    _max_force_select = ObjectProperty(None)
+    _force_select_display = ObjectProperty(None)
+
+    def biplace(self, value):
+        if value:
+            self._max_force_select.disabled = True
+            self.select_force(130)
+        else:
+            self._max_force_select.disabled = False
+            self.select_force(self._max_force_select.value)
+
+    def select_force(self, value):
+        self._force_select_display.text = str(value) + " kg"
 
 
 class Calibrate(Screen):
