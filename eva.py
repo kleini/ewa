@@ -14,7 +14,7 @@ from display import DisplayApp
 from enum import Enum
 from threading import Thread
 
-
+# TODO 'KeysView' object does not support indexing
 class ForceMapping(object):
     def __init__(self):
         self._map = dict([(0, 0), (50, 5826), (60, 6783), (70, 7209), (80, 8177), (90, 8816), (100, 9498), (130, 11469)])
