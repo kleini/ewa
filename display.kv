@@ -4,7 +4,7 @@
 <Connected>:
 
 <Widget>:
-    font_size: dp(20)
+    font_size: '20sp'
 
 <Tow>:
     _force_gauge: force_gauge
@@ -157,3 +157,32 @@
         Button:
             text: 'Zurück'
             on_release: app.root.current = 'tow'
+
+<Battery>:
+    name: 'battery'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 0
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: 'Batterie'
+            size_hint: 1, .3
+            font_size: '100sp'
+        Label:
+            text: '99,54 Volt'
+            size_hint: 1, .3
+            font_size: '100sp'
+            color: [0,1,0,1]
+        Label:
+            text: 'sehr gut'
+            size_hint: 1, .3
+            font_size: '100sp'
+            color: [0,1,0,1]
+        Button:
+            size_hint: 1, .1
+            text: 'Service'

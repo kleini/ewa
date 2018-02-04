@@ -124,6 +124,10 @@ class Calibrate(Screen):
         self._labels[self._label_index][0].text = '[color=ff0000]' + self._labels[self._label_index][0].text + '[/color]'
 
 
+class Battery(Screen):
+    pass
+
+
 class Display(ScreenManager):
     pass
 
@@ -146,6 +150,8 @@ class DisplayApp(App):
         self._calibrate = Calibrate(self._mapping)
         display.add_widget(self._calibrate)
         display.add_widget(ForceSelect())
+        display.add_widget(Battery())
+        display.current = 'battery'
         return display
 
     def connected(self, connected):
