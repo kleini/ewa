@@ -72,6 +72,10 @@ class ForceSelect(Screen):
         self._force_select_display.text = str(value) + " kg"
 
 
+class Service(Screen):
+    pass
+
+
 class Calibrate(Screen):
     _fifty_label = ObjectProperty(None)
     _sixty_label = ObjectProperty(None)
@@ -150,6 +154,7 @@ class DisplayApp(App):
         self._calibrate = Calibrate(self._mapping)
         display.add_widget(self._calibrate)
         display.add_widget(ForceSelect())
+        display.add_widget(Service())
         display.add_widget(Battery())
         display.current = 'battery'
         return display

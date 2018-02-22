@@ -29,6 +29,9 @@
                 size_hint: None, 1
                 width: self.height
             Button:
+                text: 'Batterie'
+                on_release: app.root.current = 'battery'
+            Button:
                 text: 'Kalibrieren'
                 on_release: app.root.current = 'calibrate'
             Label:
@@ -74,6 +77,71 @@
         Button:
             text: 'Ok'
             on_release: app.root.current = 'tow'
+
+<Service>:
+    name: 'service'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 0
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            size_hint: 1, .18
+            Label:
+                text: 'Motor'
+            Label:
+                text: 'Temperatur'
+            Label:
+                id: temperature_motor_label
+                text: '20°C'
+        BoxLayout:
+            size_hint: 1, .18
+            Label:
+                text: 'Controller'
+            Label:
+                text: 'Temperatur'
+            Label:
+                id: temperature_controller_label
+                text: '21°C'
+        BoxLayout:
+            size_hint: 1, .54
+            Label:
+                size_hint: .33, 1
+                text: 'Batterie'
+            BoxLayout:
+                size_hint: .67, 1
+                orientation: 'vertical'
+                BoxLayout:
+                    Label:
+                        text: 'Ladezustand'
+                    Label:
+                        id: actual_energy_label
+                        text: '95.3%'
+                BoxLayout:
+                    Label:
+                        text: 'kleinste Spannung'
+                    Label:
+                        id: lowest_voltage_label
+                        text: '3,21V'
+                BoxLayout:
+                    Label:
+                        text: 'Zelle'
+                    Label:
+                        id: cell_identifier_label
+                        text: '23'
+        BoxLayout:
+            size_hint: 1, .1
+            spacing: 1
+            Button:
+                text: 'Schlepp'
+                on_release: app.root.current = 'tow'
+            Button:
+                text: 'Batterie'
+                on_release: app.root.current = 'battery'
 
 <Calibrate>:
     name: 'calibrate'
@@ -183,6 +251,12 @@
             size_hint: 1, .3
             font_size: '100sp'
             color: [0,1,0,1]
-        Button:
+        BoxLayout:
             size_hint: 1, .1
-            text: 'Service'
+            spacing: 1
+            Button:
+                text: 'Schlepp'
+                on_release: app.root.current = 'tow'
+            Button:
+                text: 'Service'
+                on_release: app.root.current = 'service'
