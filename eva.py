@@ -1,5 +1,6 @@
 import argparse
 import bisect
+import can
 import canopen
 import json
 import logging
@@ -92,6 +93,7 @@ class Eva(object):
         self._mapping.read()
         self._display = DisplayApp(args.d, self._mapping)
         self._network = canopen.Network()
+        self._network.listeners = self._network.listeners + [BMSListener()]
         self._network.connect(bustype='socketcan', channel=args.dev)
         self._controller = self._network.add_node(7, 'CANopenSocket.eds')
         # main EVA thread here
@@ -243,6 +245,19 @@ class Eva(object):
         if self._display:
             self._display.connected(connected)
         self._heartbeat = connected
+
+
+class BMSListener(can.Listener):
+    def on_message_received(self, msg):
+        if msg.is_error_frame or msg.is_remote_frame:
+            return
+        try:
+            self.process(msg.arbitration_id, msg.data, msg.timestamp)
+        except Exception as e:
+            logging.error(str(e))
+
+    def process(self, can_id, data, timestamp):
+        logging.debug('CAN ID: ' + hex(can_id))
 
 
 eva = Eva()
