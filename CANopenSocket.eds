@@ -9799,8 +9799,29 @@ AccessType=rww
 PDOMapping=1
 DefaultValue=0
 
+[320B]
+ParameterName=Motor Temperature
+ObjectType=7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+
 [3216]
 ParameterName=Throttle Command
+ObjectType=7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+
+[322A]
+ParameterName=Controller Temperature
+ObjectType=7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+
+[324D]
+ParameterName=Keyswitch Voltage
 ObjectType=7
 DataType=0x0004
 AccessType=ro

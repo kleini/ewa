@@ -6,6 +6,7 @@ import json
 import logging
 import os.path
 import signal
+import struct
 import sys
 import time
 import traceback
@@ -203,13 +204,32 @@ class Eva(object):
         return State.ONLINE
 
     def read(self):
+        count = 0
         while self._read:
             try:
                 value = self._controller.sdo[0x3216].raw
                 self.show_data(value)
             except canopen.sdo.SdoError as e:
                 print('Reading Throttle_Command failed')
+            if count >= 10:
+                try:
+                    value = self._controller.sdo[0x320b].raw
+                    self.show_motor_temperature(value)
+                except canopen.sdo.SdoError as e:
+                    logging.error('Reading motor temperature failed')
+                try:
+                    value = self._controller.sdo[0x322a].raw
+                    self.show_controller_temperature(value)
+                except canopen.sdo.SdoError as e:
+                    logging.error('Reading controller temperature failed')
+                try:
+                    value = self._controller.sdo[0x324d].raw
+                    self.show_voltage(value)
+                except canopen.sdo.SdoError as e:
+                    logging.error('Reading voltage failed')
+                count = 0
             time.sleep(0.1)
+            count += 1
 
     def online(self):
         time.sleep(0.1)
@@ -227,6 +247,22 @@ class Eva(object):
         if self._display:
             self._display.set_measure(value)
             self._display.set_torque(self._mapping.map(value))
+
+    def show_motor_temperature(self, value):
+        logging.debug('Motor temperature ' + str(value))
+        if self._display:
+            self._display.set_motor_temperature(value)
+
+    def show_controller_temperature(self, value):
+        logging.debug('Controller temperature ' + str(value))
+        if self._display:
+            self._display.set_controller_temperature(value)
+
+    def show_voltage(self, value):
+        value /= 100.0
+        logging.debug('Voltage {:3.2f}V'.format(value))
+        if self._display:
+            self._display.set_voltage(value)
 
     def monitor_heartbeat(self):
         while self._run:
@@ -248,6 +284,8 @@ class Eva(object):
 
 
 class BMSListener(can.Listener):
+    _bms_id = 1
+
     def on_message_received(self, msg):
         if msg.is_error_frame or msg.is_remote_frame:
             return
@@ -257,7 +295,27 @@ class BMSListener(can.Listener):
             logging.error(str(e))
 
     def process(self, can_id, data, timestamp):
-        logging.debug('CAN ID: ' + hex(can_id))
+        if 310 + self._bms_id == can_id:
+            voltage, current, energy, tmp, defect_cell_count = struct.unpack_from('>3H2B', bytes(data))
+            voltage = voltage / 100.0
+            logging.info('Voltage {:3.2f}V, Current {:d}A, Energy {:d}Ah, defect cells {:d}'.format(voltage, current, energy, defect_cell_count))
+        if 311 + self._bms_id == can_id:
+            min_voltage, min_cell_address, max_voltage, max_cell_address, reserved, cell_count = struct.unpack_from('>HBH3B', bytes(data))
+            min_voltage /= 100.0
+            max_voltage /= 100.0
+            logging.info('Minimum Voltage {:1.2f}V cell {:d}, maximum voltage {:1.2f}V cell: {:d}, cells {:d}'.format(min_voltage, min_cell_address, max_voltage, max_cell_address, cell_count))
+        if 312 + self._bms_id == can_id:
+            average_temperature, max_temperature, min_temperature, reserved, reserved, reserved, min_temp_cell_address, max_temp_cell_address = struct.unpack_from('8B', bytes(data))
+            logging.info('Average temperature {:d}\u00b0C, hottest temperature {:d}\u00b0C cell {:d}, coldest temperature {:d}\u00b0C, cell {:d}'.format(average_temperature, max_temperature, max_temp_cell_address, min_temperature, min_temp_cell_address))
+        if 313 + self._bms_id == can_id:
+            low_limit, current_limit, capacity, charge_level = struct.unpack_from('>4H', bytes(data))
+            capacity /= 10.0
+            charge_level /= 10.0
+            logging.info('Capacity {:3.2f}Ah, Charge level {:3.2f}%'.format(capacity, charge_level))
+        if 314 + self._bms_id == can_id:
+            address, voltage, temperature = struct.unpack_from('>BHB', bytes(data))
+            voltage /= 100.0
+            logging.info('Cell {:d} {:3.2f}V {:d}\u00b0C'.format(address, voltage, temperature))
 
 
 eva = Eva()

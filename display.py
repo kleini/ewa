@@ -170,3 +170,21 @@ class DisplayApp(App):
     def set_torque(self, value):
         if self._tow:
             self._tow.set_torque(value)
+
+    def set_motor_temperature(self, value):
+        pass
+
+    def set_controller_temperature(self, value):
+        pass
+
+    def set_voltage(self, value):
+        pass
+
+    def set_charge_level(self, value):
+        pass
+
+    def set_minimum_voltage(self, value):
+        pass
+
+    def set_min_cell_address(self, value):
+        pass
