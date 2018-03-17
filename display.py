@@ -73,7 +73,24 @@ class ForceSelect(Screen):
 
 
 class Service(Screen):
-    pass
+    _motor_temperature = ObjectProperty(None)
+    _controller_temperature = ObjectProperty(None)
+    _charge_level = ObjectProperty(None)
+    _min_voltage = ObjectProperty(None)
+    _min_cell_address = ObjectProperty(None)
+
+    def set_motor_temperature(self, value):
+        self._motor_temperature.text = u'{:d}\u00b0C'.format(value)
+
+    def set_controller_temperature(self, value):
+        self._controller_temperature.text = u'{:d}\u00b0C'.format(value)
+
+    def set_charge_level(self, level):
+        self._charge_level.text = '{:3.1f}%'.format(level)
+
+    def set_min_cell_address_voltage(self, address, voltage):
+        self._min_cell_address.text = str(address)
+        self._min_voltage.text = '{:1.2f}V'.format(voltage)
 
 
 class Calibrate(Screen):
@@ -129,7 +146,14 @@ class Calibrate(Screen):
 
 
 class Battery(Screen):
-    pass
+    _voltage = ObjectProperty(None)
+    _level = ObjectProperty(None)
+
+    def set_voltage(self, voltage):
+        self._voltage.text = '{:3.2f}Volt'.format(voltage)
+
+    def set_charge_level(self, level):
+        self._level.text = '{:3.1f}%'.format(level)
 
 
 class Display(ScreenManager):
@@ -141,7 +165,9 @@ class DisplayApp(App):
         self._devel = devel
         self._mapping = mapping
         self._tow = None
+        self._service = None
         self._calibrate = None
+        self._battery = None
         super(DisplayApp, self).__init__()
 
     def build(self):
@@ -154,8 +180,10 @@ class DisplayApp(App):
         self._calibrate = Calibrate(self._mapping)
         display.add_widget(self._calibrate)
         display.add_widget(ForceSelect())
-        display.add_widget(Service())
-        display.add_widget(Battery())
+        self._service = Service()
+        display.add_widget(self._service)
+        self._battery = Battery()
+        display.add_widget(self._battery)
         display.current = 'battery'
         return display
 
@@ -172,19 +200,23 @@ class DisplayApp(App):
             self._tow.set_torque(value)
 
     def set_motor_temperature(self, value):
-        pass
+        if self._service:
+            self._service.set_motor_temperature(value)
 
     def set_controller_temperature(self, value):
-        pass
+        if self._service:
+            self._service.set_controller_temperature(value)
 
     def set_voltage(self, value):
-        pass
+        if self._battery:
+            self._battery.set_voltage(value)
 
     def set_charge_level(self, value):
-        pass
+        if self._battery:
+            self._battery.set_charge_level(value)
+        if self._service:
+            self._service.set_charge_level(value)
 
-    def set_minimum_voltage(self, value):
-        pass
-
-    def set_min_cell_address(self, value):
-        pass
+    def set_min_cell_address_voltage(self, address, voltage):
+        if self._service:
+            self._service.set_min_cell_address_voltage(address, voltage)

@@ -80,6 +80,11 @@
 
 <Service>:
     name: 'service'
+    _motor_temperature: temperature_motor_label
+    _controller_temperature: temperature_controller_label
+    _charge_level: charge_level_label
+    _min_voltage: min_voltage_label
+    _min_cell_address: min_cell_address_label
     BoxLayout:
         orientation: 'vertical'
         spacing: 0
@@ -97,7 +102,7 @@
                 text: 'Temperatur'
             Label:
                 id: temperature_motor_label
-                text: '20°C'
+                text: '--°C'
         BoxLayout:
             size_hint: 1, .18
             Label:
@@ -106,7 +111,7 @@
                 text: 'Temperatur'
             Label:
                 id: temperature_controller_label
-                text: '21°C'
+                text: '--°C'
         BoxLayout:
             size_hint: 1, .54
             Label:
@@ -119,20 +124,20 @@
                     Label:
                         text: 'Ladezustand'
                     Label:
-                        id: actual_energy_label
-                        text: '95.3%'
+                        id: charge_level_label
+                        text: '--,-%'
                 BoxLayout:
                     Label:
                         text: 'kleinste Spannung'
                     Label:
-                        id: lowest_voltage_label
-                        text: '3,21V'
+                        id: min_voltage_label
+                        text: '-,--V'
                 BoxLayout:
                     Label:
                         text: 'Zelle'
                     Label:
-                        id: cell_identifier_label
-                        text: '23'
+                        id: min_cell_address_label
+                        text: '--'
         BoxLayout:
             size_hint: 1, .1
             spacing: 1
@@ -228,6 +233,8 @@
 
 <Battery>:
     name: 'battery'
+    _voltage: voltage
+    _level: level
     BoxLayout:
         orientation: 'vertical'
         spacing: 0
@@ -242,12 +249,14 @@
             size_hint: 1, .3
             font_size: '100sp'
         Label:
-            text: '99,54 Volt'
+            id: voltage
+            text: '-,--Volt'
             size_hint: 1, .3
             font_size: '100sp'
             color: [0,1,0,1]
         Label:
-            text: 'sehr gut'
+            id: level
+            text: '--,-%'
             size_hint: 1, .3
             font_size: '100sp'
             color: [0,1,0,1]
