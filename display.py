@@ -1,6 +1,7 @@
 import logging
 import traceback
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
 from kivy.lang import Builder
@@ -161,6 +162,16 @@ class Display(ScreenManager):
 
 
 class DisplayApp(App):
+    _connected = False
+    _calibrate_measure = 0
+    _torque = 0
+    _motor_temperature = 0
+    _controller_temperature = 0
+    _battery_voltage = 0
+    _battery_level = 0
+    _min_cell_address = 0
+    _min_cell_voltage = 0
+
     def __init__(self, devel, mapping):
         self._devel = devel
         self._mapping = mapping
@@ -185,38 +196,52 @@ class DisplayApp(App):
         self._battery = Battery()
         display.add_widget(self._battery)
         display.current = 'battery'
+
+        Clock.schedule_interval(lambda *t: self.update(), 0.01)
+
         return display
 
-    def connected(self, connected):
+    def update(self):
         if self._tow:
-            self._tow.connected(connected)
+            self._tow.connected(self._connected)
+        if self._calibrate:
+            self._calibrate.set_measure(self._calibrate_measure)
+        if self._tow:
+            self._tow.set_torque(self._torque)
+        if self._service:
+            self._service.set_motor_temperature(self._motor_temperature)
+        if self._service:
+            self._service.set_controller_temperature(self._controller_temperature)
+        if self._battery:
+            self._battery.set_voltage(self._battery_voltage)
+        if self._battery:
+            self._battery.set_charge_level(self._battery_level)
+        if self._service:
+            self._service.set_charge_level(self._battery_level)
+        if self._service:
+            self._service.set_min_cell_address_voltage(self._min_cell_address, self._min_cell_voltage)
+
+    def connected(self, connected):
+        self._connected = connected
 
     def set_measure(self, value):
-        if self._calibrate:
-            self._calibrate.set_measure(value)
+        self._calibrate_measure = value
 
     def set_torque(self, value):
-        if self._tow:
-            self._tow.set_torque(value)
+        self._torque = value
 
     def set_motor_temperature(self, value):
-        if self._service:
-            self._service.set_motor_temperature(value)
+        self._motor_temperature = value
 
     def set_controller_temperature(self, value):
-        if self._service:
-            self._service.set_controller_temperature(value)
+        self._controller_temperature = value
 
     def set_voltage(self, value):
-        if self._battery:
-            self._battery.set_voltage(value)
+        self._battery_voltage = value
 
     def set_charge_level(self, value):
-        if self._battery:
-            self._battery.set_charge_level(value)
-        if self._service:
-            self._service.set_charge_level(value)
+        self._battery_level = value
 
     def set_min_cell_address_voltage(self, address, voltage):
-        if self._service:
-            self._service.set_min_cell_address_voltage(address, voltage)
+        self._min_cell_address = address
+        self._min_cell_voltage = voltage
