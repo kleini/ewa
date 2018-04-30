@@ -179,7 +179,10 @@ class Eva(object):
         except canopen.sdo.SdoCommunicationError as e:
             logging.info('Failed to configure heartbeat.')
         if self._PDO:
-            self._controller.pdo.read()
+            try:
+                self._controller.pdo.read()
+            except canopen.sdo.SdoCommunicationError as e:
+                logging.info('Failed to read PDO configuration.')
             self._controller.pdo.tx[1].clear()
             # TODO replace with Throttle_Command 0x3216, subindex 0 length 2 readonly
             self._controller.pdo.tx[1].add_variable(0x2110, 1)
@@ -188,8 +191,11 @@ class Eva(object):
             # Transmit at least every 1000 milliseconds.
             self._controller.pdo.tx[1].event_timer = 1000
             self._controller.pdo.tx[1].enabled = True
-            self._controller.pdo.save()
             self._controller.pdo.tx[1].add_callback(callback=self.received)
+            try:
+                self._controller.pdo.save()
+            except canopen.sdo.SdoCommunicationError as e:
+                logging.info('Failed to save PDO configuration.')
         else:
             if not self._read:
                 self._read = True
