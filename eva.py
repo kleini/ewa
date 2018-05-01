@@ -55,14 +55,14 @@ class ForceMapping(object):
         if value in self._reverse:
             return self._reverse[value]
         length = len(self._reverse)
-        pos = bisect.bisect_left(self._reverse.keys(), value)
+        pos = bisect.bisect_left(list(self._reverse.keys()), value)
         if length == pos:
             pos = length - 1
 
         elif 0 == pos:
             pos = 1
-        key1 = self._reverse.keys()[pos - 1]
-        key2 = self._reverse.keys()[pos]
+        key1 = list(self._reverse.keys())[pos - 1]
+        key2 = list(self._reverse.keys())[pos]
         value1 = self._reverse[key1]
         value2 = self._reverse[key2]
         pitch = float(value2 - value1) / float(key2 - key1)
