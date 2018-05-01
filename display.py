@@ -197,29 +197,27 @@ class DisplayApp(App):
         display.add_widget(self._battery)
         display.current = 'battery'
 
-        Clock.schedule_interval(lambda *t: self.update(), 0.01)
+        Clock.schedule_interval(lambda *t: self.update(), 0.05)
+        Clock.schedule_interval(lambda *t: self.update_battery(), 1)
 
         return display
 
     def update(self):
-        if self._tow:
-            self._tow.connected(self._connected)
         if self._calibrate:
             self._calibrate.set_measure(self._calibrate_measure)
         if self._tow:
+            self._tow.connected(self._connected)
             self._tow.set_torque(self._torque)
+
+    def update_battery(self):
         if self._service:
             self._service.set_motor_temperature(self._motor_temperature)
-        if self._service:
             self._service.set_controller_temperature(self._controller_temperature)
+            self._service.set_charge_level(self._battery_level)
+            self._service.set_min_cell_address_voltage(self._min_cell_address, self._min_cell_voltage)
         if self._battery:
             self._battery.set_voltage(self._battery_voltage)
-        if self._battery:
             self._battery.set_charge_level(self._battery_level)
-        if self._service:
-            self._service.set_charge_level(self._battery_level)
-        if self._service:
-            self._service.set_min_cell_address_voltage(self._min_cell_address, self._min_cell_voltage)
 
     def connected(self, connected):
         self._connected = connected

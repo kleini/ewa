@@ -91,6 +91,7 @@ class Eva(object):
         self._read_thread = None
         self._monitor_thread = None
         self._heartbeat = False
+        self._received_data = False
 
     def start(self, args):
         self._mapping.read()
@@ -157,7 +158,7 @@ class Eva(object):
         nmt_state = None
         try:
             self._controller.nmt.state = 'PRE-OPERATIONAL'
-            self._controller.sdo['Producer heartbeat time'].raw = 50
+            self._controller.sdo['Producer heartbeat time'].raw = 1000
         except canopen.sdo.SdoCommunicationError as e:
             logging.info('Failed to configure heartbeat.')
         except BaseException as e:
@@ -175,7 +176,7 @@ class Eva(object):
         # TODO somewhere here SDO timeouts may occur.
         self._controller.nmt.state = 'PRE-OPERATIONAL'
         try:
-            self._controller.sdo['Producer heartbeat time'].raw = 50
+            self._controller.sdo['Producer heartbeat time'].raw = 1000
         except canopen.sdo.SdoCommunicationError as e:
             logging.info('Failed to configure heartbeat.')
         if self._PDO:
@@ -240,6 +241,9 @@ class Eva(object):
             count += 1
 
     def online(self):
+        """
+        Just monitor the heartbeat and change state accordingly. Make the main thread sleep running through the states.
+        """
         time.sleep(0.1)
         if self._heartbeat:
             return State.ONLINE
@@ -252,17 +256,20 @@ class Eva(object):
 
     def show_data(self, value):
         logging.debug('Throttle_Command: ' + str(value))
+        self._received_data = True
         if self._display:
             self._display.set_measure(value)
             self._display.set_torque(self._mapping.map(value))
 
     def show_motor_temperature(self, value):
         logging.debug('Motor temperature ' + str(value))
+        self._received_data = True
         if self._display:
             self._display.set_motor_temperature(value)
 
     def show_controller_temperature(self, value):
         logging.debug('Controller temperature ' + str(value))
+        self._received_data = True
         if self._display:
             self._display.set_controller_temperature(value)
 
@@ -275,11 +282,12 @@ class Eva(object):
     def monitor_heartbeat(self):
         while self._run:
             nmt_state = None
+            self._received_data = False
             try:
-                nmt_state = self._controller.nmt.wait_for_heartbeat(0.2)
+                nmt_state = self._controller.nmt.wait_for_heartbeat(1.2)
             except canopen.nmt.NmtError as e:
                 pass
-            if nmt_state:
+            if nmt_state or self._received_data:
                 self.connected(True)
             else:
                 self.connected(False)
@@ -310,7 +318,7 @@ class BMSListener(can.Listener):
         if 310 + self._bms_id == can_id:
             voltage, current, energy, reserved, defect_cell_count = struct.unpack_from('>3H2B', bytes(data))
             voltage = voltage / 100.0
-            logging.info(
+            logging.debug(
                 'Voltage {:3.2f}V, Current {:d}A, Energy {:d}Ah, defect cells {:d}'.format(voltage, current, energy,
                                                                                            defect_cell_count))
             self._display.set_voltage(voltage)
@@ -319,13 +327,13 @@ class BMSListener(can.Listener):
                 '>HBH3B', bytes(data))
             min_voltage /= 100.0
             max_voltage /= 100.0
-            logging.info('Minimum Voltage {:1.2f}V cell {:d}, maximum voltage {:1.2f}V cell: {:d}, cells {:d}'.format(
+            logging.debug('Minimum Voltage {:1.2f}V cell {:d}, maximum voltage {:1.2f}V cell: {:d}, cells {:d}'.format(
                 min_voltage, min_cell_address, max_voltage, max_cell_address, cell_count))
             self._display.set_min_cell_address_voltage(min_cell_address, min_voltage)
         if 312 + self._bms_id == can_id:
             average_temperature, max_temperature, min_temperature, reserved, reserved, reserved, min_temp_cell_address, max_temp_cell_address = struct.unpack_from(
                 '8B', bytes(data))
-            logging.info(
+            logging.debug(
                 u'Average temperature {:d}\u00b0C, hottest temperature {:d}\u00b0C cell {:d}, coldest temperature {:d}\u00b0C, cell {:d}'.format(
                     average_temperature, max_temperature, max_temp_cell_address, min_temperature,
                     min_temp_cell_address))
@@ -333,12 +341,12 @@ class BMSListener(can.Listener):
             low_limit, current_limit, capacity, charge_level = struct.unpack_from('>4H', bytes(data))
             capacity /= 10.0
             charge_level /= 10.0
-            logging.info('Capacity {:3.1f}Ah, Charge level {:3.1f}%'.format(capacity, charge_level))
+            logging.debug('Capacity {:3.1f}Ah, Charge level {:3.1f}%'.format(capacity, charge_level))
             self._display.set_charge_level(charge_level)
         if 314 + self._bms_id == can_id:
             address, voltage, temperature = struct.unpack_from('>BHB', bytes(data))
             voltage /= 100.0
-            logging.info(u'Cell {:d} {:3.2f}V {:d}\u00b0C'.format(address, voltage, temperature))
+            logging.debug(u'Cell {:d} {:3.2f}V {:d}\u00b0C'.format(address, voltage, temperature))
 
 
 eva = Eva()
