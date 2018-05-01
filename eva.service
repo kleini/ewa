@@ -6,7 +6,7 @@ User=pi
 PermissionsStartOnly=true
 TimeoutStartSec=0
 ExecStartPre=/bin/chmod o+rw /dev/vchiq
-ExecStart=/home/pi/eva/dev -- -i 3 can0
+ExecStart=/home/pi/eva/eva -- -i 3 can0
 KillMode=process
 WorkingDirectory=/home/pi/eva
 
