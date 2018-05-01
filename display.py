@@ -22,6 +22,10 @@ class Connected(Widget):
         self.bind(pos=self.draw, size=self.draw)
 
     def connected(self, connected):
+        old = (1 == self.color.d)
+        if old == connected:
+            logging.info('No update')
+            return
         if connected:
             self.color.r = 0
             self.color.g = 1
@@ -44,9 +48,12 @@ class Tow(Screen):
         self._connected_color.connected(connected)
 
     def set_torque(self, value):
+        old = self._force_gauge._value
+        if old == value:
+            return
         try:
-            self._force_label.text = "      "
-            self._force_label.text = str(value) + " kg"
+            self._force_label.text = '      '
+            self._force_label.text = '{:d}kd'.format(value)
             # don't fall into errorvalue
             if value > 150:
                 value = 150
@@ -119,7 +126,10 @@ class Calibrate(Screen):
             label.text = str(self._mapping.get(key))
 
     def set_measure(self, value):
-        self._force_measure_label.text = str(value)
+        old = self._force_measure_label.text
+        new = str(value)
+        if old != new:
+            self._force_measure_label.text = new
 
     def take_over(self):
         value = self._force_measure_label.text
