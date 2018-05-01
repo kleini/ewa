@@ -10,9 +10,6 @@ from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.widget import Widget
 
 
-Builder.load_file('display.kv')
-
-
 class Connected(Widget):
     def __init__(self, **kwargs):
         super(Connected, self).__init__(**kwargs)
@@ -22,9 +19,8 @@ class Connected(Widget):
         self.bind(pos=self.draw, size=self.draw)
 
     def connected(self, connected):
-        old = (1 == self.color.d)
+        old = (1 == self.color.g)
         if old == connected:
-            logging.info('No update')
             return
         if connected:
             self.color.r = 0
@@ -53,7 +49,7 @@ class Tow(Screen):
             return
         try:
             self._force_label.text = '      '
-            self._force_label.text = '{:d}kd'.format(value)
+            self._force_label.text = '{:d}kg'.format(value)
             # don't fall into errorvalue
             if value > 150:
                 value = 150
