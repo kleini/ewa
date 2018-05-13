@@ -26,8 +26,8 @@ def color(battery_level):
 def color_voltage(voltage, cells):
     # voltage of a cell can be between 2.6V and 3.55V
     cell_voltage = voltage/cells
-    red = (3.55 - cell_voltage) / .95
-    green = (cell_voltage - 2.6) / .95
+    red = (3.55 - cell_voltage) / .95 if cell_voltage >= 2.6 else 1.
+    green = (cell_voltage - 2.6) / .95 if cell_voltage >= 2.6 else 0.
     return [red, green, 0, 1]
 
 
