@@ -4,7 +4,6 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
-from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.widget import Widget
@@ -37,6 +36,7 @@ class Connected(Widget):
 
 class Tow(Screen):
     _force_gauge = ObjectProperty(None)
+    _battery_bar = ObjectProperty(None)
     _force_label = ObjectProperty(None)
     _connected_color = ObjectProperty(None)
 
@@ -60,6 +60,9 @@ class Tow(Screen):
     def set_torque_kg(self, value):
         self._force_label.text = '      '
         self._force_label.text = '{:d}kg'.format(value)
+
+    def set_battery_level(self, value):
+        self._battery_bar.value = value
 
 
 class ForceSelect(Screen):
@@ -175,10 +178,10 @@ class DisplayApp(App):
     _torque = 0
     _motor_temperature = 0
     _controller_temperature = 0
-    _battery_voltage = 0
-    _battery_level = 0
+    _battery_voltage = 0.
+    _battery_level = 0.
     _min_cell_address = 0
-    _min_cell_voltage = 0
+    _min_cell_voltage = 0.
 
     def __init__(self, devel, mapping):
         self._devel = devel
@@ -231,6 +234,8 @@ class DisplayApp(App):
         if self._battery:
             self._battery.set_voltage(self._battery_voltage)
             self._battery.set_charge_level(self._battery_level)
+        if self._tow:
+            self._tow.set_battery_level(self._battery_level)
 
     def connected(self, connected):
         self._connected = connected
