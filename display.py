@@ -44,12 +44,10 @@ class Tow(Screen):
         self._connected_color.connected(connected)
 
     def set_torque(self, value):
-        old = self._force_gauge._value
+        old = self._force_gauge.get_value()
         if old == value:
             return
         try:
-            self._force_label.text = '      '
-            self._force_label.text = '{:d}kg'.format(value)
             # don't fall into errorvalue
             if value > 150:
                 value = 150
@@ -58,6 +56,10 @@ class Tow(Screen):
             self._force_gauge.set_value(value)
         except BaseException as e:
             logging.error(traceback.format_exc())
+
+    def set_torque_kg(self, value):
+        self._force_label.text = '      '
+        self._force_label.text = '{:d}kg'.format(value)
 
 
 class ForceSelect(Screen):
@@ -204,6 +206,7 @@ class DisplayApp(App):
         display.current = 'battery'
 
         Clock.schedule_interval(lambda *t: self.update(), 0.05)
+        Clock.schedule_interval(lambda *t: self.update_slow(), 0.5)
         Clock.schedule_interval(lambda *t: self.update_battery(), 1)
 
         return display
@@ -214,6 +217,10 @@ class DisplayApp(App):
         if self._tow:
             self._tow.connected(self._connected)
             self._tow.set_torque(self._torque)
+
+    def update_slow(self):
+        if self._tow:
+            self._tow.set_torque_kg(self._torque)
 
     def update_battery(self):
         if self._service:

@@ -75,3 +75,6 @@ class Gauge(Widget):
             self._turn()
         except BaseException as e:
             logging.error(traceback.format_exc())
+
+    def get_value(self):
+        return self._value
