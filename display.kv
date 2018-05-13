@@ -31,9 +31,6 @@
             Button:
                 text: 'Batterie'
                 on_release: app.root.current = 'battery'
-            Button:
-                text: 'Kalibrieren'
-                on_release: app.root.current = 'calibrate'
             Label:
                 text: 'Aktuell'
             Label:
@@ -147,6 +144,10 @@
             Button:
                 text: 'Batterie'
                 on_release: app.root.current = 'battery'
+            Button:
+                text: 'Kalibrieren (FINGER WEG!)'
+                on_release: app.root.current = 'calibrate'
+
 
 <Calibrate>:
     name: 'calibrate'
@@ -229,7 +230,7 @@
                 on_press: root.next_label()
         Button:
             text: 'Zurück'
-            on_release: app.root.current = 'tow'
+            on_release: app.root.current = 'service'
 
 <Battery>:
     name: 'battery'
