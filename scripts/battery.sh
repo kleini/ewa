@@ -3,7 +3,7 @@
 DEV=$1
 
 # Minimum 2.6V + random * 0.95V
-printf -v VOLTAGE '%04x' $(((RANDOM % 95) * 30 + 260 * 30))
+printf -v VOLTAGE '%04x' $(((RANDOM % 2850) + 7800))
 
 # H:voltage*100 H:current H:energy B:tmp B:defect_cell_count
 cansend $DEV 137#${VOLTAGE}$(printf '%04x' $((RANDOM % 500 + 1)))$(printf '%04x' $((RANDOM % 201)))0000

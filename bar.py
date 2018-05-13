@@ -27,6 +27,7 @@ Builder.load_string('''
         color: [0, 0, 0, 1]
         bold: True
         id: label
+        text: '--%'
 ''')
 
 

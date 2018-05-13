@@ -3,10 +3,32 @@ import traceback
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivy.graphics import Color, Ellipse
-from kivy.properties import ObjectProperty
-from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
+from kivy.graphics import (
+    Color,
+    Ellipse
+)
+from kivy.properties import (
+    ListProperty,
+    ObjectProperty
+)
+from kivy.uix.screenmanager import (
+    ScreenManager,
+    Screen,
+    NoTransition
+)
 from kivy.uix.widget import Widget
+
+
+def color(battery_level):
+    return [1. - battery_level / 100., battery_level / 100., 0, 1]
+
+
+def color_voltage(voltage, cells):
+    # voltage of a cell can be between 2.6V and 3.55V
+    cell_voltage = voltage/cells
+    red = (3.55 - cell_voltage) / .95
+    green = (cell_voltage - 2.6) / .95
+    return [red, green, 0, 1]
 
 
 class Connected(Widget):
@@ -62,6 +84,7 @@ class Tow(Screen):
         self._force_label.text = '{:d}kg'.format(value)
 
     def set_battery_level(self, value):
+        self._battery_bar.color = color(value)
         self._battery_bar.value = value
 
 
@@ -162,9 +185,11 @@ class Battery(Screen):
     _level = ObjectProperty(None)
 
     def set_voltage(self, voltage):
+        self._voltage.color = color_voltage(voltage, 30.)
         self._voltage.text = '{:3.2f}Volt'.format(voltage)
 
     def set_charge_level(self, level):
+        self._level.color = color(level)
         self._level.text = '{:3.1f}%'.format(level)
 
 
@@ -180,6 +205,7 @@ class DisplayApp(App):
     _controller_temperature = 0
     _battery_voltage = 0.
     _battery_level = 0.
+    """Charge level of the battery. Values between 0 and 100"""
     _min_cell_address = 0
     _min_cell_voltage = 0.
 
