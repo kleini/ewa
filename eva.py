@@ -79,7 +79,7 @@ class State(Enum):
 # TODO daemon goes into STOPPED state. Resolve STOPPED state. Use fast writing to cause STOPPED state.
 class Eva(object):
     def __init__(self):
-        self._PDO = True
+        self._PDO = False
         self._mapping = ForceMapping()
         self._display = None
         self._run = True
@@ -262,12 +262,14 @@ class Eva(object):
             self._display.set_torque(self._mapping.map(value))
 
     def show_motor_temperature(self, value):
+        value /= 10
         logging.debug('Motor temperature ' + str(value))
         self._received_data = True
         if self._display:
             self._display.set_motor_temperature(value)
 
     def show_controller_temperature(self, value):
+        value /= 10
         logging.debug('Controller temperature ' + str(value))
         self._received_data = True
         if self._display:

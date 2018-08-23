@@ -112,10 +112,10 @@ class Service(Screen):
     _min_cell_address = ObjectProperty(None)
 
     def set_motor_temperature(self, value):
-        self._motor_temperature.text = u'{:d}\u00b0C'.format(value)
+        self._motor_temperature.text = u'{:.1f}\u00b0C'.format(value)
 
     def set_controller_temperature(self, value):
-        self._controller_temperature.text = u'{:d}\u00b0C'.format(value)
+        self._controller_temperature.text = u'{:.1f}\u00b0C'.format(value)
 
     def set_charge_level(self, level):
         self._charge_level.text = '{:3.1f}%'.format(level)
@@ -201,8 +201,8 @@ class DisplayApp(App):
     _connected = False
     _calibrate_measure = 0
     _torque = 0
-    _motor_temperature = 0
-    _controller_temperature = 0
+    _motor_temperature = 0.
+    _controller_temperature = 0.
     _battery_voltage = 0.
     _battery_level = 0.
     """Charge level of the battery. Values between 0 and 100"""
