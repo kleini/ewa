@@ -32,7 +32,11 @@ class ForceMapping(object):
         self._reverse = self.reverse(self._map)
 
     def get(self, key):
-        return self._map[key]
+        try:
+            return self._map[key]
+        except KeyError as e:
+            logging.exception('Map value missing')
+            return 0
 
     def write(self):
         with open("mapping.json", "w") as file:
@@ -160,7 +164,7 @@ class Eva(object):
             self._controller.nmt.state = 'PRE-OPERATIONAL'
             self._controller.sdo['Producer heartbeat time'].raw = 1000
         except canopen.sdo.SdoCommunicationError as e:
-            logging.info('Failed to configure heartbeat.')
+            logging.exception('Failed to configure heartbeat.')
         except BaseException as e:
             logging.error(traceback.format_exc())
         try:
@@ -219,28 +223,28 @@ class Eva(object):
                 value = self._controller.sdo[0x3216].raw
                 self.show_data(value)
             except canopen.sdo.SdoError as e:
-                logging.error('Reading Throttle_Command failed')
+                logging.exception('Reading Throttle_Command failed')
             try:
                 value = self._controller.sdo[0x3207].raw
                 self.show_rpm(value)
             except canopen.sdo.SdoError as e:
-                logging.error('Reading RPM failed')
+                logging.exception('Reading RPM failed')
             if count >= 10:
                 try:
                     value = self._controller.sdo[0x320b].raw
                     self.show_motor_temperature(value)
                 except canopen.sdo.SdoError as e:
-                    logging.error('Reading motor temperature failed')
+                    logging.exception('Reading motor temperature failed')
                 try:
                     value = self._controller.sdo[0x322a].raw
                     self.show_controller_temperature(value)
                 except canopen.sdo.SdoError as e:
-                    logging.error('Reading controller temperature failed')
+                    logging.exception('Reading controller temperature failed')
                 try:
                     value = self._controller.sdo[0x324d].raw
                     self.show_voltage(value)
                 except canopen.sdo.SdoError as e:
-                    logging.error('Reading voltage failed')
+                    logging.exception('Reading voltage failed')
                 count = 0
             time.sleep(0.1)
             count += 1
