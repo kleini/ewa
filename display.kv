@@ -10,6 +10,7 @@
 <Tow>:
     _force_gauge: force_gauge
     _battery_bar: battery_bar
+    _rpm_label: rpm_label
     _force_label: force_label
     _connected_color: connected_color
     name: 'tow'
@@ -31,7 +32,7 @@
                 size_hint: None, 1
                 width: self.height
             Button:
-                size_hint: .3, 1
+                size_hint: .2, 1
                 text: 'Batterie'
                 on_release: app.root.current = 'battery'
             Bar:
@@ -41,8 +42,12 @@
                 color: [0, 1, 0, 1]
             Label:
                 size_hint: .1, 1
+                id: rpm_label
+                text: '0/min'
+            Label:
+                size_hint: .1, 1
                 id: force_label
-                text: '0 kg'
+                text: '0kg'
 
 <ForceSelect>:
     name: 'forceselect'

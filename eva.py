@@ -200,7 +200,7 @@ class Eva(object):
         else:
             if not self._read:
                 self._read = True
-                print('Start')
+                logging.debug('Starting read thread')
                 self._read_thread = Thread(target=self.read)
                 self._read_thread.start()
         # TODO With the initialisation problem the emulator will not go back into operational mode and we get no data.
@@ -219,7 +219,12 @@ class Eva(object):
                 value = self._controller.sdo[0x3216].raw
                 self.show_data(value)
             except canopen.sdo.SdoError as e:
-                print('Reading Throttle_Command failed')
+                logging.error('Reading Throttle_Command failed')
+            try:
+                value = self._controller.sdo[0x3207].raw
+                self.show_rpm(value)
+            except canopen.sdo.SdoError as e:
+                logging.error('Reading RPM failed')
             if count >= 10:
                 try:
                     value = self._controller.sdo[0x320b].raw
@@ -260,6 +265,14 @@ class Eva(object):
         if self._display:
             self._display.set_measure(value)
             self._display.set_torque(self._mapping.map(value))
+
+    def show_rpm(self, value):
+        if value > 32767:
+            value -= 65536
+        logging.debug('RPM: ' + str(value))
+        self._received_data = True
+        if self._display:
+            self._display.set_rpm(value)
 
     def show_motor_temperature(self, value):
         value /= 10

@@ -59,6 +59,7 @@ class Connected(Widget):
 class Tow(Screen):
     _force_gauge = ObjectProperty(None)
     _battery_bar = ObjectProperty(None)
+    _rpm_label = ObjectProperty(None)
     _force_label = ObjectProperty(None)
     _connected_color = ObjectProperty(None)
 
@@ -79,8 +80,10 @@ class Tow(Screen):
         except BaseException as e:
             logging.error(traceback.format_exc())
 
+    def set_rpm(self, value):
+        self._rpm_label.text = '{:d}/min'.format(value)
+
     def set_torque_kg(self, value):
-        self._force_label.text = '      '
         self._force_label.text = '{:d}kg'.format(value)
 
     def set_battery_level(self, value):
@@ -201,6 +204,7 @@ class DisplayApp(App):
     _connected = False
     _calibrate_measure = 0
     _torque = 0
+    _rpm = 0
     _motor_temperature = 0.
     _controller_temperature = 0.
     _battery_voltage = 0.
@@ -246,6 +250,7 @@ class DisplayApp(App):
         if self._tow:
             self._tow.connected(self._connected)
             self._tow.set_torque(self._torque)
+            self._tow.set_rpm(self._rpm)
 
     def update_slow(self):
         if self._tow:
@@ -271,6 +276,9 @@ class DisplayApp(App):
 
     def set_torque(self, value):
         self._torque = value
+
+    def set_rpm(self, value):
+        self._rpm = value
 
     def set_motor_temperature(self, value):
         self._motor_temperature = value

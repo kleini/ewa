@@ -9799,6 +9799,13 @@ AccessType=rww
 PDOMapping=1
 DefaultValue=0
 
+[3207]
+ParameterName=Motor RPM
+ObjectType=7
+DataType=0x0004
+AccessType=ro
+PDOMapping=0
+
 [320B]
 ParameterName=Motor Temperature
 ObjectType=7
