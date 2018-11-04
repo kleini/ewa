@@ -100,6 +100,7 @@ The following commands are necessary to get a working version of Python Kivy and
     # Does not work
     pip install --upgrade --force-reinstall git+https://github.com/kivy/kivy.git@master
 
+    wget https://bootstrap.pypa.io/get-pip.py
     python3.4 get-pip.py --user
     .local/bin/pip3.4 install --user canopen
     sudo chmod o+rw /dev/vchiq
@@ -107,6 +108,8 @@ The following commands are necessary to get a working version of Python Kivy and
 Install the EWA code:
 
     git clone git@github.com:kleini/ewa.git
+
+Any errors regarding OpenGL, EGL, GLES and so on need to be solved using libraries from /opt/vc/lib. Standard MESA libraries do not work.
 
 ### Packages to ease debugging work
 
