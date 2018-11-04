@@ -73,12 +73,18 @@ Enable the following options in /boot/config.txt
 ## Packages
 
 * git
+* python3-pip
+* libmtdev
 
 ## Install VC libraries
 
     cd /tmp
     git clone --depth 1 https://github.com/Hexxeh/rpi-firmware.git
     cp -rv /tmp/rpi-firmware/vc/hardfp/opt/vc /opt
+    sudo ln -fs /opt/vc/lib/libEGL.so /usr/lib/arm-linux-gnueabihf/libEGL.so
+    sudo ln -fs /opt/vc/lib/libEGL.so /usr/lib/arm-linux-gnueabihf/libEGL.so.1
+    sudo ln -fs /opt/vc/lib/libGLESv2.so /usr/lib/arm-linux-gnueabihf/libGLESv2.so
+    sudo ln -fs /opt/vc/lib/libGLESv2.so /usr/lib/arm-linux-gnueabihf/libGLESv2.so.2
     echo "/opt/vc/lib" >/etc/ld.so.conf.d/vc.conf
     ldconfig
 
@@ -89,12 +95,13 @@ The following commands are necessary to get a working version of Python Kivy and
     sudo echo "deb http://archive.mitako.eu/ jessie main" > /etc/apt/sources.list.d/mitako.list
     curl -L http://archive.mitako.eu/archive-mitako.gpg.key | sudo apt-key add -
     sudo apt update
-    sudo apt install python3-kivypie python2-kivypie
+    sudo apt install python3-kivypie python2-kivypie python3-pip
 
     # Does not work
     pip install --upgrade --force-reinstall git+https://github.com/kivy/kivy.git@master
 
-    pip3 install canopen
+    python3.4 get-pip.py --user
+    .local/bin/pip3.4 install --user canopen
     sudo chmod o+rw /dev/vchiq
 
 Install the EWA code:
@@ -103,9 +110,9 @@ Install the EWA code:
 
 ### Packages to ease debugging work
 
-* vi
+* vim
 * can-utils
-* i2c-utils
+* i2c-tools
 * https://github.com/CANopenNode/CANopenSocket
 
 ## s-usv
