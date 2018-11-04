@@ -65,7 +65,10 @@ Enable the following options in /boot/config.txt
     iface can0 can static
         bitrate 125000
         loopback off
-        restart-ms 100
+        #restart-ms 100
+        up /sbin/ip link set can0 down
+        up /sbin/ip link set can0 up type can bitrate 125000 restart-ms 100
+
 
 ## Packages
 
