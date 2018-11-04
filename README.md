@@ -1,4 +1,4 @@
-# EVA
+# EWA
 
 Software for running an electric powered winch for paragliding. Designed for running on a normal Raspberry Pi with
 ordinal touchscreen.
@@ -16,7 +16,7 @@ because Kivy is broken on Ubuntu 17.10 with Python3.
 
 For running on the Raspberry Pi start it with this command:
 
-    ./eva -- -i 3 can0
+    ./ewa -- -i 3 can0
 
 The runtime starter uses Python3.
 
@@ -30,7 +30,7 @@ Start with Raspbian Stretch lite image.
 
 ## raspi-config
 
-* hostname eva
+* hostname ewa
 * timezone Europe/Berlin
 * keyboard: German
 * enable SSH
@@ -79,7 +79,7 @@ Enable the following options in /boot/config.txt
     echo "/opt/vc/lib" >/etc/ld.so.conf.d/vc.conf
     ldconfig
 
-## EVA
+## EWA
 
 The following commands are necessary to get a working version of Python Kivy and canopen library:
 
@@ -94,9 +94,9 @@ The following commands are necessary to get a working version of Python Kivy and
     pip3 install canopen
     sudo chmod o+rw /dev/vchiq
 
-Install the EVA code:
+Install the EWA code:
 
-    git clone git@github.com:kleini/eva.git
+    git clone git@github.com:kleini/ewa.git
 
 ### Packages to ease debugging work
 

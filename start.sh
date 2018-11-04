@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-./eva -- -i 3 can0
+./ewa -- -i 3 can0
 

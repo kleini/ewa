@@ -6,9 +6,9 @@ User=pi
 PermissionsStartOnly=true
 TimeoutStartSec=0
 ExecStartPre=/bin/chmod o+rw /dev/vchiq
-ExecStart=/home/pi/eva/eva -- -i 3 can0
+ExecStart=/home/pi/ewa/ewa -- -i 3 can0
 KillMode=process
-WorkingDirectory=/home/pi/eva
+WorkingDirectory=/home/pi/ewa
 
 [Install]
 WantedBy=multi-user.target

@@ -81,7 +81,7 @@ class State(Enum):
 
 
 # TODO daemon goes into STOPPED state. Resolve STOPPED state. Use fast writing to cause STOPPED state.
-class Eva(object):
+class Ewa(object):
     def __init__(self):
         self._PDO = False
         self._mapping = ForceMapping()
@@ -104,7 +104,7 @@ class Eva(object):
         self._network.listeners = self._network.listeners + [BMSListener(self._display)]
         self._network.connect(bustype='socketcan', channel=args.dev)
         self._controller = self._network.add_node(7, 'CANopenSocket.eds')
-        # main EVA thread here
+        # main EWA thread here
         self._main_thread.start()
         # blocks until the UI ends
         try:
@@ -368,16 +368,16 @@ class BMSListener(can.Listener):
             logging.debug(u'Cell {:d} {:3.2f}V {:d}\u00b0C'.format(address, voltage, temperature))
 
 
-eva = Eva()
+ewa = Ewa()
 
 
 def handler(signum, frame):
-    eva.stop()
+    ewa.stop()
 
 
 def main():
     signal.signal(signal.SIGINT, handler)
-    parser = argparse.ArgumentParser(description='EVA')
+    parser = argparse.ArgumentParser(description='EWA')
     parser.add_argument('dev', metavar='<CAN device name>', help='CAN device name')
     parser.add_argument('-i', default=42, type=int, choices=range(1, 127), required=False, help='canopen Node ID')
     parser.add_argument('-d', action="store_true")
@@ -389,8 +389,8 @@ def main():
     some_logger.setLevel(logging.DEBUG)
     some_logger.addHandler(logging.StreamHandler())
 
-    eva.start(args)
-    eva.stop()
+    ewa.start(args)
+    ewa.stop()
     return 0
 
 
