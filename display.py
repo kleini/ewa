@@ -81,6 +81,7 @@ class Tow(Screen):
             logging.error(traceback.format_exc())
 
     def set_rpm(self, value):
+        return
         self._rpm_label.text = '{:d}/min'.format(value)
 
     def set_torque_kg(self, value):
@@ -236,7 +237,7 @@ class DisplayApp(App):
         display.add_widget(self._service)
         self._battery = Battery()
         display.add_widget(self._battery)
-        display.current = 'battery'
+        display.current = 'tow'
 
         Clock.schedule_interval(lambda *t: self.update(), 0.05)
         Clock.schedule_interval(lambda *t: self.update_slow(), 0.5)

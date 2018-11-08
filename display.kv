@@ -22,9 +22,25 @@
             Rectangle:
                 pos: self.pos
                 size: self.size
-        Gauge:
-            id: force_gauge
+        RelativeLayout:
             size_hint: 1, .9
+            Gauge:
+                id: force_gauge
+                size_hint: 1, 1
+            Label:
+                size_hint: .2, .2
+                pos_hint: {'top': 1, 'right': 1}
+                markup: True
+                halign: 'right'
+                font_name: 'fonts/DejaVuSans-Bold.ttf'
+                id: rpm_label
+                text: '[size=50]5000[/size]\n[font=Roboto]1/min[/font]'
+            Label:
+                size_hint: .2, .2
+                pos_hint: {'top': 1, 'x': 0}
+                markup: True
+                font_name: 'fonts/DejaVuSans-Bold.ttf'
+                text: '[size=50]32.3[/size]\n[font=Roboto]km/h[/font]'
         BoxLayout:
             size_hint: 1, .1
             Connected:
@@ -36,14 +52,10 @@
                 text: 'Batterie'
                 on_release: app.root.current = 'battery'
             Bar:
-                size_hint: .5, 1
+                size_hint: .6, 1
                 id: battery_bar
                 background_color: [.29, .29, .29, 1]
                 color: [0, 1, 0, 1]
-            Label:
-                size_hint: .1, 1
-                id: rpm_label
-                text: '0/min'
             Label:
                 size_hint: .1, 1
                 id: force_label
