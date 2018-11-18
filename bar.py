@@ -1,4 +1,3 @@
-import logging
 from kivy.lang import Builder
 from kivy.properties import (
     BoundedNumericProperty,

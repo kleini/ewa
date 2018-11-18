@@ -11,6 +11,7 @@
     _force_gauge: force_gauge
     _battery_bar: battery_bar
     _rpm_label: rpm_label
+    _rope_speed_label: rope_speed_label
     _force_label: force_label
     _connected_color: connected_color
     name: 'tow'
@@ -40,6 +41,7 @@
                 pos_hint: {'top': 1, 'x': 0}
                 markup: True
                 font_name: 'fonts/DejaVuSans-Bold.ttf'
+                id: rope_speed_label
                 text: '[size=50]32.3[/size]\n[font=Roboto]km/h[/font]'
         BoxLayout:
             size_hint: 1, .1

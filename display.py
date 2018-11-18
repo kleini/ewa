@@ -60,6 +60,7 @@ class Tow(Screen):
     _force_gauge = ObjectProperty(None)
     _battery_bar = ObjectProperty(None)
     _rpm_label = ObjectProperty(None)
+    _rope_speed_label = ObjectProperty(None)
     _force_label = ObjectProperty(None)
     _connected_color = ObjectProperty(None)
 
@@ -81,8 +82,10 @@ class Tow(Screen):
             logging.error(traceback.format_exc())
 
     def set_rpm(self, value):
-        return
-        self._rpm_label.text = '{:d}/min'.format(value)
+        self._rpm_label.text = '[size=50]{:d}[/size]\n[font=Roboto]1/min[/font]'.format(value)
+
+    def set_rope_speed(self, value):
+        self._rope_speed_label.text = '[size=50]{:.1f}[/size]\n[font=Roboto]km/h[/font]'.format(value)
 
     def set_torque_kg(self, value):
         self._force_label.text = '{:d}kg'.format(value)
@@ -206,6 +209,7 @@ class DisplayApp(App):
     _calibrate_measure = 0
     _torque = 0
     _rpm = 0
+    _rope_speed = 0
     _motor_temperature = 0.
     _controller_temperature = 0.
     _battery_voltage = 0.
@@ -237,7 +241,7 @@ class DisplayApp(App):
         display.add_widget(self._service)
         self._battery = Battery()
         display.add_widget(self._battery)
-        display.current = 'tow'
+        display.current = 'battery'
 
         Clock.schedule_interval(lambda *t: self.update(), 0.05)
         Clock.schedule_interval(lambda *t: self.update_slow(), 0.5)
@@ -252,6 +256,7 @@ class DisplayApp(App):
             self._tow.connected(self._connected)
             self._tow.set_torque(self._torque)
             self._tow.set_rpm(self._rpm)
+            self._tow.set_rope_speed(self._rope_speed)
 
     def update_slow(self):
         if self._tow:
@@ -280,6 +285,9 @@ class DisplayApp(App):
 
     def set_rpm(self, value):
         self._rpm = value
+
+    def set_rope_speed(self, value):
+        self._rope_speed = value
 
     def set_motor_temperature(self, value):
         self._motor_temperature = value
