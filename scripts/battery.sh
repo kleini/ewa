@@ -25,4 +25,5 @@ do
         # B:address H:voltage B:temperature
         cansend $DEV 13b#$(printf '%02x' $I)$(printf '%04x' $((RANDOM % 95 + 260)))$(printf '%02x' $((RANDOM % 40)))
     done
+    sleep 1
 done
