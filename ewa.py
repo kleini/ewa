@@ -8,6 +8,7 @@ import traceback
 from bmslistener import BMSListener
 from canopen import nmt
 from display import DisplayApp
+from epaper import PaperDisplay
 from enum import Enum
 from forcemapping import ForceMapping
 from ropespeed import RopeSpeed

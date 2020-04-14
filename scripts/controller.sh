@@ -17,6 +17,6 @@ do
         ~/tmp/winde/CANopenSocket/canopencomm/canopencomm 7 write 0x324d 0 i32 $((RANDOM % 10000))
         COUNTER=0
     fi
-    sleep 0.1
+    sleep 0.5
 done
 
