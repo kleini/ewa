@@ -1,0 +1,2 @@
+fonts/DejaVuSans-Bold.ttf filter=lfs diff=lfs merge=lfs -text
+fonts/Arial_Black.ttf filter=lfs diff=lfs merge=lfs -text

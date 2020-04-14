@@ -26,6 +26,7 @@ class Ewa(object):
         self._PDO = False
         self._mapping = ForceMapping()
         self._display = None
+        self._epaper = None
         self._run = True
         self._state = State.OFFLINE
         self._network = None
@@ -41,6 +42,7 @@ class Ewa(object):
         self._devel = args.d
         self._mapping.read()
         self._display = DisplayApp(args.d, self._mapping)
+        self._epaper = PaperDisplay()
         self._network = canopen.Network()
         self._network.listeners = self._network.listeners + [BMSListener(self._display)]
         self._network.connect(bustype='socketcan', channel=args.dev)
@@ -73,6 +75,9 @@ class Ewa(object):
         if self._network:
             self._network.disconnect()
             self._network = None
+        if self._epaper:
+            self._epaper.stop()
+            self._epaper = None
         if self._display:
             self._display.stop()
             self._display = None
@@ -215,6 +220,8 @@ class Ewa(object):
         if self._display:
             self._display.set_measure(value)
             self._display.set_torque(self._mapping.map(value))
+        if self._epaper:
+            self._epaper.set_torque(self._mapping.map(value))
 
     def show_rpm(self, value):
         if value > 32767:

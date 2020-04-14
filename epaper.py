@@ -1,3 +1,4 @@
+import logging
 import time
 from PIL import ImageDraw, ImageFont
 from threading import Thread
