@@ -103,6 +103,7 @@ The following commands are necessary to get a working version of Python Kivy and
     wget https://bootstrap.pypa.io/get-pip.py
     python3.4 get-pip.py --user
     .local/bin/pip3.4 install --user canopen
+    python3.4 -m pip install --user canopen
     sudo chmod o+rw /dev/vchiq
 
 Install the EWA code:
@@ -110,6 +111,11 @@ Install the EWA code:
     git clone git@github.com:kleini/ewa.git
 
 Any errors regarding OpenGL, EGL, GLES and so on need to be solved using libraries from /opt/vc/lib. Standard MESA libraries do not work.
+
+### e-Paper
+
+    apt install python-pil python-spidev libatlas3-base
+    python3.4 -m pip install spidev RPi.GPIO numpy
 
 ### Packages to ease debugging work
 
