@@ -233,6 +233,8 @@ class Ewa(object):
         if self._display:
             self._display.set_rpm(value)
             self._display.set_rope_speed(speed)
+        if self._epaper:
+            self._epaper.set_rope_speed(speed)
 
     def show_motor_temperature(self, value):
         value /= 10
@@ -240,6 +242,8 @@ class Ewa(object):
         self._received_data = True
         if self._display:
             self._display.set_motor_temperature(value)
+        if self._epaper:
+            self._epaper.set_motor_temperature(value)
 
     def show_controller_temperature(self, value):
         value /= 10
@@ -247,6 +251,8 @@ class Ewa(object):
         self._received_data = True
         if self._display:
             self._display.set_controller_temperature(value)
+        if self._epaper:
+            self._epaper.set_controller_temperature(value)
 
     def show_voltage(self, value):
         value /= 100.0
