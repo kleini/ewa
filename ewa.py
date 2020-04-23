@@ -44,7 +44,7 @@ class Ewa(object):
         self._display = DisplayApp(args.d, self._mapping)
         self._epaper = PaperDisplay()
         self._network = canopen.Network()
-        self._network.listeners = self._network.listeners + [BMSListener(self._display)]
+        self._network.listeners = self._network.listeners + [BMSListener(self._display, self._epaper)]
         self._network.connect(bustype='socketcan', channel=args.dev)
         self._controller = self._network.add_node(7, 'CANopenSocket.eds')
         # main EWA thread here

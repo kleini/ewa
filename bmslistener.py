@@ -6,9 +6,10 @@ import struct
 class BMSListener(can.Listener):
     _bms_id = 1
 
-    def __init__(self, display):
+    def __init__(self, display, epaper):
         super(BMSListener, self).__init__()
         self._display = display
+        self._epaper = epaper
 
     def on_message_received(self, msg):
         if msg.is_error_frame or msg.is_remote_frame:
@@ -41,12 +42,14 @@ class BMSListener(can.Listener):
                 u'Average temperature {:d}\u00b0C, hottest temperature {:d}\u00b0C cell {:d}, coldest temperature {:d}\u00b0C, cell {:d}'.format(
                     average_temperature, max_temperature, max_temp_cell_address, min_temperature,
                     min_temp_cell_address))
+            self._epaper.set_battery_temperature(average_temperature)
         if 313 + self._bms_id == can_id:
             low_limit, current_limit, capacity, charge_level = struct.unpack_from('>4H', bytes(data))
             capacity /= 10.0
             charge_level /= 10.0
             logging.debug('Capacity {:3.1f}Ah, Charge level {:3.1f}%'.format(capacity, charge_level))
             self._display.set_charge_level(charge_level)
+            self._epaper.set_battery_level(charge_level)
         if 314 + self._bms_id == can_id:
             address, voltage, temperature = struct.unpack_from('>BHB', bytes(data))
             voltage /= 100.0

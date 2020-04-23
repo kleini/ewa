@@ -60,9 +60,8 @@ class PaperDisplay(object):
         self._draw.rectangle([(549, 39), (750, 107)], 0xFF, 0x00, 5)
         self._draw.rectangle([(746, 52), (763, 91)], 0xFF, 0x00, 5)
         self._draw.point([(549, 39), (750, 39), (549, 107), (750, 107), (763, 52), (763, 91)], 0xFF)
-        self._draw.line([(554, 44), (745, 102)], 0x00, 5)
         self._draw.text((547, 120), 'Batterie', font=self._font)
-        self._draw.text((547, 165), '78%', font=self._font)
+        self._draw_battery_level(self._battery_level_new)
         # powerbar
         self._draw.text((16, 328), 'Zugkraft in kg', font=self._font)
         self._draw.rectangle([(16, 426), (745, 508)], 0xFF, 0x00, 3)
@@ -80,7 +79,10 @@ class PaperDisplay(object):
 
     @staticmethod
     def _format_temperature(value):
-        return '{:3.0f}°'.format(value)
+        if value:
+            return '{:3.0f}°'.format(value)
+        else:
+            return '-°'
 
     def _draw_torque_lines(self):
         for i in range(0, 14):
@@ -105,28 +107,33 @@ class PaperDisplay(object):
 
     def _draw_motor_temperature(self, value):
         self._draw.rectangle([(184, 120), (259, 165)], 0xFF)
-        if value:
-            text = self._format_temperature(value)
-        else:
-            text = '-°'
+        text = self._format_temperature(value)
         self._draw.text((259 - self._font.getsize(text)[0], 120), text, font=self._font)
         return value
 
     def _draw_controller_temperature(self, value):
         self._draw.rectangle([(184, 165), (259, 210)], 0xFF)
-        if value:
-            text = self._format_temperature(value)
-        else:
-            text = '-°'
+        text = self._format_temperature(value)
         self._draw.text((259 - self._font.getsize(text)[0], 165), text, font=self._font)
         return value
 
     def _draw_battery_temperature(self, value):
-        # TODO
+        self._draw.rectangle([(184, 210), (259, 255)], 0xFF)
+        text = self._format_temperature(value)
+        self._draw.text((259 - self._font.getsize(text)[0], 210), text, font=self._font)
         return value
 
-    def draw_battery_level(self, value):
-        # TODO
+    def _draw_battery_level(self, value):
+        if value:
+            self._draw.rectangle([(554, 44), (745, 102)], 0xFF)
+            right = value * 1.91
+            self._draw.rectangle([(554, 44), (554 + right, 102)], 0x70)
+            text = '{:3.1f}%'.format(value)
+        else:
+            self._draw.line([(554, 44), (745, 102)], 0x00, 5)
+            text = '-%'
+        self._draw.rectangle([(600, 165), (781, 210)], 0xFF)
+        self._draw.text((781 - self._font.getsize(text)[0], 165), text, font=self._font)
         return value
 
     def display_loop(self):
@@ -152,7 +159,7 @@ class PaperDisplay(object):
                     changed = True
             if not changed:
                 if self._battery_level_old != self._battery_level_new:
-                    self._battery_level_old = self.draw_battery_level(self._battery_level_new)
+                    self._battery_level_old = self._draw_battery_level(self._battery_level_new)
                     changed = True
             if changed:
                 self._display.draw_partial(constants.DisplayModes.GC16)
