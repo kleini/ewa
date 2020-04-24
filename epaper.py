@@ -12,6 +12,7 @@ class PaperDisplay(object):
     _draw = None
     _font = None
     _run = True
+    _sleep = False
     _torque_old = 0.0
     _torque_new = 0.0
     _rope_speed_old = 0.0
@@ -162,10 +163,16 @@ class PaperDisplay(object):
                     self._battery_level_old = self._draw_battery_level(self._battery_level_new)
                     changed = True
             if changed:
+                if self._sleep:
+                    self._sleep = False
+                    self._display.activate()
                 self._display.draw_partial(constants.DisplayModes.GC16)
             else:
-                # TODO put ePaper into sleep mode
-                time.sleep(0.1)
+                if not self._sleep:
+                    self._sleep = True
+                    self._display.sleep()
+                else:
+                    time.sleep(1.0)
 
     def set_torque(self, value):
         if value > 140:
